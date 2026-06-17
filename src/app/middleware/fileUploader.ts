@@ -8,7 +8,12 @@ const allowedMimeTypes: string[] = [
   "image/jpg",
   "image/webp",
 ];
-const allowedFieldNames: string[] = ["profile_image"];
+const allowedFieldNames: string[] = [
+  "profile_image",
+  "drivingLicense_image",
+  "idCard_image",
+  "vehicleRegistration_image",
+];
 
 // Validate if the provided MIME type is in the allowed list
 const isValidFileType = (mimetype: string): boolean => {
@@ -84,9 +89,14 @@ const uploadFile = () => {
   const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-  }).fields([{ name: "profile_image", maxCount: 1 }]);
+  }).fields([
+    { name: "profile_image", maxCount: 1 },
+    { name: "drivingLicense_image", maxCount: 1 },
+    { name: "idCard_image", maxCount: 1 },
+    { name: "vehicleRegistration_image", maxCount: 1 },
+  ]);
 
   return upload;
 };
 
-export {uploadFile}
+export { uploadFile };
