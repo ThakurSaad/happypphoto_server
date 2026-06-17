@@ -22,15 +22,16 @@ const registrationAccount = async (payload: {
   password: string;
   confirmPassword: string;
   email: string;
+  phoneNumber?: string;
 }) => {
-  const { role, name, password, confirmPassword, email } = payload;
+  const { role, name, password, confirmPassword, email, phoneNumber } = payload;
 
   validateFields(payload, [
+    "name",
+    "email",
     "password",
     "confirmPassword",
-    "email",
     "role",
-    "name",
   ]);
 
   const { code: activationCode, expiredAt } = codeGenerator(3);
@@ -88,6 +89,9 @@ const registrationAccount = async (payload: {
     authId: auth._id,
     name,
     email,
+    role,
+    ...(phoneNumber && { phoneNumber }),
+    ...(role === EnumUserRole.DRIVER && { isApproved: false }),
   };
 
   if (role === EnumUserRole.ADMIN) await Admin.create(userData);
