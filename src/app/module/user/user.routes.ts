@@ -18,6 +18,12 @@ router
     "/delete-account",
     auth(config.auth_level.all),
     UserController.deleteMyAccount,
+  )
+  .patch(
+    "/update-documents-driver",
+    auth(config.auth_level.driver),
+    uploadFile(),
+    UserController.updateDocumentsForDriver,
   );
 
 export = router;

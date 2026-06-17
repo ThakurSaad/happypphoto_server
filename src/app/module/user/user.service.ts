@@ -72,7 +72,7 @@ const getProfile = async (userData: AuthUserPayload) => {
   return result;
 };
 
-export const deleteMyAccount = async (payload: {
+const deleteMyAccount = async (payload: {
   email: string;
   password: string;
 }) => {
@@ -104,7 +104,7 @@ export const deleteMyAccount = async (payload: {
   ]);
 };
 
-const postDocuments = async (req: Request) => {
+const updateDocumentsForDriver = async (req: Request) => {
   const { body: data, user } = req;
   const { userId } = user;
   const files = req.files as {
@@ -170,7 +170,7 @@ const UserService = {
   getProfile,
   deleteMyAccount,
   updateProfile,
-  postDocuments,
+  updateDocumentsForDriver,
 };
 
 export { UserService };
