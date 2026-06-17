@@ -7,16 +7,16 @@ import config from "../../../config";
 const router = express.Router();
 
 router
-  .get("/profile", auth(config.auth_level.user), UserController.getProfile)
+  .get("/profile", auth(config.auth_level.all), UserController.getProfile)
   .patch(
     "/edit-profile",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     uploadFile(),
     UserController.updateProfile,
   )
   .delete(
     "/delete-account",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     UserController.deleteMyAccount,
   );
 
