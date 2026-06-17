@@ -8,6 +8,7 @@ import ApiError from "../../../error/ApiError";
 import unlinkFile from "../../../util/unlinkFile";
 import { Request } from "express";
 import { AuthUserPayload } from "../../../types/auth.types";
+import { EnumUserRole } from "../../../util/enum";
 
 const updateProfile = async (req: Request) => {
   const { body: data } = req;
@@ -103,10 +104,73 @@ export const deleteMyAccount = async (payload: {
   ]);
 };
 
+const postDocuments = async (req: Request) => {
+  const { body: data, user } = req;
+  const { userId } = user;
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  const updatedData: Record<string, any> = {
+    licenseNumber: data.licenseNumber,
+    plateNumber: data.plateNumber,
+  };
+
+  deleteFalsyField(data);
+  const existingUser = await User.findById(userId).lean();
+
+  if (!existingUser) {
+    throw new ApiError(status.NOT_FOUND, "User not found");
+  }
+  if (existingUser.role !== EnumUserRole.DRIVER) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+
+  let replaceDrivingLicense = false;
+  let replaceIdCard = false;
+  let replaceVehicleRegistration = false;
+
+  if (files?.drivingLicense_image) {
+    updatedData.drivingLicense_image = files.drivingLicense_image[0].path;
+    replaceDrivingLicense = true;
+  }
+
+  if (files?.idCard_image) {
+    updatedData.idCard_image = files.idCard_image[0].path;
+    replaceIdCard = true;
+  }
+
+  if (files?.vehicleRegistration_image) {
+    updatedData.vehicleRegistration_image =
+      files.vehicleRegistration_image[0].path;
+    replaceVehicleRegistration = true;
+  }
+
+  const [userFromDB] = await Promise.all([
+    User.findByIdAndUpdate(userId, updatedData, {
+      returnDocument: "after",
+    }).populate("authId"),
+  ]);
+
+  if (replaceDrivingLicense && existingUser.drivingLicense_image) {
+    unlinkFile(existingUser.drivingLicense_image);
+  }
+
+  if (replaceIdCard && existingUser.idCard_image) {
+    unlinkFile(existingUser.idCard_image);
+  }
+
+  if (replaceVehicleRegistration && existingUser.vehicleRegistration_image) {
+    unlinkFile(existingUser.vehicleRegistration_image);
+  }
+
+  return userFromDB;
+};
+
 const UserService = {
   getProfile,
   deleteMyAccount,
   updateProfile,
+  postDocuments,
 };
 
 export { UserService };
