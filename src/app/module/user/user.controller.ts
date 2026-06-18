@@ -38,9 +38,9 @@ const deleteMyAccount = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateDocumentsForDriver = catchAsync(
+const updateDriverInformation = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await UserService.updateDocumentsForDriver(req);
+    const result = await UserService.updateDriverInformation(req);
     sendResponse(res, {
       statusCode: 200,
       success: true,
@@ -54,7 +54,7 @@ const UserController = {
   deleteMyAccount,
   getProfile,
   updateProfile,
-  updateDocumentsForDriver,
+  updateDriverInformation,
 };
 
 export { UserController };
