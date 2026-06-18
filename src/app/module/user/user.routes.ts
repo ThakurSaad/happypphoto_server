@@ -20,10 +20,10 @@ router
     UserController.deleteMyAccount,
   )
   .patch(
-    "/update-documents-driver",
+    "/update-driver-information",
     auth(config.auth_level.driver),
-    uploadFile(),
-    UserController.updateDocumentsForDriver,
+    uploadFile(), 
+    UserController.updateDriverInformation,
   );
 
 export = router;

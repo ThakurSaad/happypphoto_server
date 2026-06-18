@@ -104,7 +104,7 @@ const deleteMyAccount = async (payload: {
   ]);
 };
 
-const updateDocumentsForDriver = async (req: Request) => {
+const updateDriverInformation = async (req: Request) => {
   const { body: data, user } = req;
   const { userId } = user;
   const files = req.files as {
@@ -166,11 +166,52 @@ const updateDocumentsForDriver = async (req: Request) => {
   return userFromDB;
 };
 
+const updateMerchantInformation = async (req: Request) => {
+  const { body: data, user } = req;
+  const { userId } = user;
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  const updatedData: Record<string, any> = {
+    businessName: data.businessName,
+  };
+
+  deleteFalsyField(data);
+  const existingUser = await User.findById(userId).lean();
+
+  if (!existingUser) {
+    throw new ApiError(status.NOT_FOUND, "User not found");
+  }
+  if (existingUser.role !== EnumUserRole.MERCHANT) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+
+  let replaceProfileImage = false;
+
+  if (files?.profile_image) {
+    updatedData.profile_image = files.profile_image[0].path;
+    replaceProfileImage = true;
+  }
+
+  const [userFromDB] = await Promise.all([
+    User.findByIdAndUpdate(userId, updatedData, {
+      returnDocument: "after",
+    }).populate("authId"),
+  ]);
+
+  if (replaceProfileImage && existingUser.profile_image) {
+    unlinkFile(existingUser.profile_image);
+  }
+
+  return userFromDB;
+};
+
 const UserService = {
   getProfile,
   deleteMyAccount,
   updateProfile,
-  updateDocumentsForDriver,
+  updateDriverInformation,
+  updateMerchantInformation,
 };
 
 export { UserService };
