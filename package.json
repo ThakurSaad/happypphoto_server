@@ -1,5 +1,5 @@
 {
-  "name": "top-of-everest",
+  "name": "Fridge Fillers",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "keywords": [],
   "author": "thakur-saad",
   "license": "ISC",
-  "description": "top of everest",
+  "description": "Fridge Fillers",
   "dependencies": {
     "@types/chalk": "^0.4.31",
     "bcrypt": "^6.0.0",
