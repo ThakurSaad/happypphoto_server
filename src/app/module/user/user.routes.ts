@@ -22,8 +22,30 @@ router
   .patch(
     "/update-driver-information",
     auth(config.auth_level.driver),
-    uploadFile(), 
+    uploadFile(),
     UserController.updateDriverInformation,
+  )
+  .patch(
+    "/update-merchant-business-information",
+    auth(config.auth_level.merchant),
+    UserController.updateMerchantBusinessInformation,
+  )
+  .patch(
+    "/update-merchant-store-location",
+    auth(config.auth_level.merchant),
+    UserController.updateMerchantStoreLocation,
+  )
+  .patch(
+    "/update-merchant-store-profile",
+    auth(config.auth_level.merchant),
+    uploadFile(),
+    UserController.updateMerchantStoreProfile,
+  )
+  .patch(
+    "/update-merchant-documents",
+    auth(config.auth_level.merchant),
+    uploadFile(),
+    UserController.updateMerchantDocument,
   );
 
 export = router;

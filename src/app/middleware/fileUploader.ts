@@ -13,6 +13,11 @@ const allowedFieldNames: string[] = [
   "drivingLicense_image",
   "idCard_image",
   "vehicleRegistration_image",
+  "store_logo",
+  "store_banner_image",
+  "store_front_image",
+  "trade_license_document",
+  "merchant_id_card_image",
 ];
 
 // Validate if the provided MIME type is in the allowed list
@@ -94,6 +99,11 @@ const uploadFile = () => {
     { name: "drivingLicense_image", maxCount: 1 },
     { name: "idCard_image", maxCount: 1 },
     { name: "vehicleRegistration_image", maxCount: 1 },
+    { name: "store_logo", maxCount: 1 },
+    { name: "store_banner_image", maxCount: 1 },
+    { name: "store_front_image", maxCount: 1 },
+    { name: "trade_license_document", maxCount: 1 },
+    { name: "merchant_id_card_image", maxCount: 1 },
   ]);
 
   return upload;

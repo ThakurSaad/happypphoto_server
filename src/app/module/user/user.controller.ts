@@ -50,11 +50,69 @@ const updateDriverInformation = catchAsync(
   },
 );
 
+const updateMerchantBusinessInformation = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await UserService.updateMerchantBusinessInformation(
+      req.user,
+      req.body,
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Business information updated successfully",
+      data: result,
+    });
+  },
+);
+
+const updateMerchantStoreLocation = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await UserService.updateMerchantStoreLocation(
+      req.user,
+      req.body,
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Store location updated successfully",
+      data: result,
+    });
+  },
+);
+
+const updateMerchantStoreProfile = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await UserService.updateMerchantStoreProfile(req);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Store profile updated successfully",
+      data: result,
+    });
+  },
+);
+
+const updateMerchantDocument = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await UserService.updateMerchantDocument(req);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Merchant documents updated successfully",
+      data: result,
+    });
+  },
+);
+
 const UserController = {
   deleteMyAccount,
   getProfile,
   updateProfile,
   updateDriverInformation,
+  updateMerchantBusinessInformation,
+  updateMerchantStoreLocation,
+  updateMerchantStoreProfile,
+  updateMerchantDocument,
 };
 
 export { UserController };
