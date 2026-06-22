@@ -166,17 +166,15 @@ const updateDriverInformation = async (req: Request) => {
   return userFromDB;
 };
 
-const updateMerchantInformation = async (req: Request) => {
-  const { body: data, user } = req;
-  const { userId } = user;
-  const files = req.files as {
-    [fieldname: string]: Express.Multer.File[];
-  };
-  const updatedData: Record<string, any> = {
-    businessName: data.businessName,
-  };
+const updateMerchantBusinessInformation = async (
+  userData: AuthUserPayload,
+  payload: Record<string, string>,
+) => {
+  const { storeName, businessType, businessRegistrationNumber, vatNumber } =
+    payload;
+  const { userId } = userData;
 
-  deleteFalsyField(data);
+  deleteFalsyField(payload);
   const existingUser = await User.findById(userId).lean();
 
   if (!existingUser) {
@@ -186,21 +184,179 @@ const updateMerchantInformation = async (req: Request) => {
     throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
   }
 
-  let replaceProfileImage = false;
+  const updatedData: Record<string, string> = {
+    storeName,
+    businessType,
+    businessRegistrationNumber,
+    vatNumber,
+  };
 
-  if (files?.profile_image) {
-    updatedData.profile_image = files.profile_image[0].path;
-    replaceProfileImage = true;
+  const [userFromDB] = await Promise.all([
+    User.findByIdAndUpdate(userId, updatedData, {
+      returnDocument: "after",
+    }),
+  ]);
+
+  return userFromDB;
+};
+
+const updateMerchantStoreLocation = async (
+  userData: AuthUserPayload,
+  payload: Record<string, number | string>,
+) => {
+  const {
+    storeLocationCoordinatesLat,
+    storeLocationCoordinatesLong,
+    storeAddress,
+    storeCity,
+    storeState,
+    storePostalCode,
+    storeCountry,
+  } = payload;
+  const { userId } = userData;
+
+  deleteFalsyField(payload);
+  const existingUser = await User.findById(userId).lean();
+
+  if (!existingUser) {
+    throw new ApiError(status.NOT_FOUND, "User not found");
+  }
+  if (existingUser.role !== EnumUserRole.MERCHANT) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+
+  const updatedData: Record<
+    string,
+    string | number | { coordinates: number[] }
+  > = {
+    storeLocationCoordinates: {
+      coordinates: [
+        Number(storeLocationCoordinatesLong),
+        Number(storeLocationCoordinatesLat),
+      ],
+    },
+    storeAddress,
+    storeCity,
+    storeState,
+    storePostalCode,
+    storeCountry,
+  };
+
+  const [userFromDB] = await Promise.all([
+    User.findByIdAndUpdate(userId, updatedData, {
+      returnDocument: "after",
+    }),
+  ]);
+
+  return userFromDB;
+};
+
+const updateMerchantStoreProfile = async (req: Request) => {
+  const {
+    storeDescription,
+    storeOpeningTime,
+    storeClosingTime,
+    storeAveragePrepTime,
+  } = req.body;
+  const { userId } = req.user;
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  const updatedData: Record<string, any> = {
+    storeDescription,
+    storeOpeningTime,
+    storeClosingTime,
+    storeAveragePrepTime,
+  };
+
+  deleteFalsyField(updatedData);
+  const existingUser = await User.findById(userId).lean();
+
+  if (!existingUser) {
+    throw new ApiError(status.NOT_FOUND, "User not found");
+  }
+
+  let replaceStoreLogo = false;
+  let replaceStoreBannerImage = false;
+
+  if (files?.store_logo) {
+    updatedData.store_logo = files.store_logo[0].path;
+    replaceStoreLogo = true;
+  }
+
+  if (files?.store_banner_image) {
+    updatedData.store_banner_image = files.store_banner_image[0].path;
+    replaceStoreBannerImage = true;
   }
 
   const [userFromDB] = await Promise.all([
     User.findByIdAndUpdate(userId, updatedData, {
       returnDocument: "after",
-    }).populate("authId"),
+    }),
   ]);
 
-  if (replaceProfileImage && existingUser.profile_image) {
-    unlinkFile(existingUser.profile_image);
+  if (replaceStoreLogo && existingUser.store_logo) {
+    unlinkFile(existingUser.store_logo);
+  }
+
+  if (replaceStoreBannerImage && existingUser.store_banner_image) {
+    unlinkFile(existingUser.store_banner_image);
+  }
+
+  return userFromDB;
+};
+
+const updateMerchantDocument = async (req: Request) => {
+  const { userId } = req.user;
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  const updatedData: Record<string, any> = {};
+
+  const existingUser = await User.findById(userId).lean();
+
+  if (!existingUser) {
+    throw new ApiError(status.NOT_FOUND, "User not found");
+  }
+  if (existingUser.role !== EnumUserRole.MERCHANT) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+
+  let replaceStoreFrontImage = false;
+  let replaceTradeLicenseDocument = false;
+  let replaceMerchantIdCardImage = false;
+
+  if (files?.store_front_image) {
+    updatedData.store_front_image = files.store_front_image[0].path;
+    replaceStoreFrontImage = true;
+  }
+
+  if (files?.trade_license_document) {
+    updatedData.trade_license_document = files.trade_license_document[0].path;
+    replaceTradeLicenseDocument = true;
+  }
+
+  if (files?.merchant_id_card_image) {
+    updatedData.merchant_id_card_image = files.merchant_id_card_image[0].path;
+    replaceMerchantIdCardImage = true;
+  }
+
+  const [userFromDB] = await Promise.all([
+    User.findByIdAndUpdate(userId, updatedData, {
+      returnDocument: "after",
+    }),
+  ]);
+
+  if (replaceStoreFrontImage && existingUser.store_front_image) {
+    unlinkFile(existingUser.store_front_image);
+  }
+
+  if (replaceTradeLicenseDocument && existingUser.trade_license_document) {
+    unlinkFile(existingUser.trade_license_document);
+  }
+
+  if (replaceMerchantIdCardImage && existingUser.merchant_id_card_image) {
+    unlinkFile(existingUser.merchant_id_card_image);
   }
 
   return userFromDB;
@@ -211,7 +367,10 @@ const UserService = {
   deleteMyAccount,
   updateProfile,
   updateDriverInformation,
-  updateMerchantInformation,
+  updateMerchantBusinessInformation,
+  updateMerchantStoreLocation,
+  updateMerchantStoreProfile,
+  updateMerchantDocument,
 };
 
 export { UserService };

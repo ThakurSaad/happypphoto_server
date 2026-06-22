@@ -28,4 +28,28 @@ export interface IUser extends Document {
     };
     coordinates: [number, number];
   };
+
+  // merchant specific fields
+  storeName?: string;
+  businessType?: string;
+  businessRegistrationNumber?: string;
+  vatNumber?: string;
+  storeLocationCoordinates?: {
+    type: { type: string };
+    coordinates: [number, number];
+  };
+  storeAddress?: string;
+  storeCity?: string;
+  storeState?: string;
+  storePostalCode?: string;
+  storeCountry?: string;
+  storeDescription?: string;
+  storeOpeningTime?: string;
+  storeClosingTime?: string;
+  storeAveragePrepTime?: number;
+  store_logo?: string;
+  store_banner_image?: string;
+  store_front_image?: string;
+  trade_license_document?: string;
+  merchant_id_card_image?: string;
 }

@@ -73,6 +73,72 @@ const UserSchema = new Schema<IUser>(
         type: [Number],
       },
     },
+
+    // merchant specific field
+    storeName: {
+      type: String,
+    },
+    businessType: {
+      type: String,
+    },
+    businessRegistrationNumber: {
+      type: String,
+    },
+    vatNumber: {
+      type: String,
+    },
+    storeLocationCoordinates: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+      },
+    },
+    storeAddress: {
+      type: String,
+    },
+    storeCity: {
+      type: String,
+    },
+    storeState: {
+      type: String,
+    },
+    storePostalCode: {
+      type: String,
+    },
+    storeCountry: {
+      type: String,
+    },
+    storeDescription: {
+      type: String,
+    },
+    storeOpeningTime: {
+      type: String,
+    },
+    storeClosingTime: {
+      type: String,
+    },
+    storeAveragePrepTime: {
+      type: Number,
+    },
+    store_logo: {
+      type: String,
+    },
+    store_banner_image: {
+      type: String,
+    },
+    store_front_image: {
+      type: String,
+    },
+    trade_license_document: {
+      type: String,
+    },
+    merchant_id_card_image: {
+      type: String,
+    },
   },
   {
     timestamps: true,
