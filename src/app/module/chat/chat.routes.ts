@@ -6,20 +6,20 @@ import {ChatController} from "./chat.controller";
 const router = express.Router();
 
 router
-  .post("/post-chat", auth(config.auth_level.user), ChatController.postChat)
+  .post("/post-chat", auth(config.auth_level.all), ChatController.postChat)
   .get(
     "/get-chat-messages",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     ChatController.getChatMessages,
   )
   .get(
     "/get-all-chats",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     ChatController.getAllChats,
   )
   .patch(
     "/update-message-as-seen",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     ChatController.updateMessageAsSeen,
   );
 

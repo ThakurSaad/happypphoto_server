@@ -8,22 +8,22 @@ const router = express.Router();
 router
   .get(
     "/get-notification",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     NotificationController.getNotification,
   )
   .get(
     "/get-all-notifications",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     NotificationController.getAllNotifications,
   )
   .patch(
     "/update-as-mark-unread",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     NotificationController.updateAsReadUnread,
   )
   .delete(
     "/delete-notification",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     NotificationController.deleteNotification,
   );
 
