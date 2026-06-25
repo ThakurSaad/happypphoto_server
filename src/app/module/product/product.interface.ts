@@ -1,8 +1,12 @@
+import { Types } from "mongoose";
+
 export interface FoodProduct {
+  merchant: Types.ObjectId;
   name: string;
-  description?: string;
-  price: number;
+  product_image: string;
   category: string;
-  imageUrl?: string;
-  available: boolean;
+  price: number;
+  quantity: number;
+  description: string;
 }
+
