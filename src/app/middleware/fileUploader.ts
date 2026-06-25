@@ -18,6 +18,7 @@ const allowedFieldNames: string[] = [
   "store_front_image",
   "trade_license_document",
   "merchant_id_card_image",
+  "product_image",
 ];
 
 // Validate if the provided MIME type is in the allowed list
@@ -104,6 +105,7 @@ const uploadFile = () => {
     { name: "store_front_image", maxCount: 1 },
     { name: "trade_license_document", maxCount: 1 },
     { name: "merchant_id_card_image", maxCount: 1 },
+    { name: "product_image", maxCount: 1 },
   ]);
 
   return upload;
