@@ -5,7 +5,7 @@ You are starting a fresh session but continuing prior work on a multivendor food
 1. Read the existing implementation plan at: `c:\Users\thakursaad\projects\happyphoto\docs\implementation_plan.md`
 2. Read the PROPERTY_HOST role definition at: `c:\Users\thakursaad\projects\happyphoto\docs\Property_host_role.md`
 3. Read/index the backend project in this workspace (models, endpoints, auth implementation, tech stack)
-4. List `c:\Users\thakursaad\projects\happyphoto\images` — organized into role subfolders (e.g. /images/user, /images/property_host, /images/driver, /images/merchant, /images/admin). Confirm the actual folder names and count files in each.
+4. List `c:\Users\thakursaad\projects\happyphoto\images` — organized into role subfolders (specifically `/images/customer`, `/images/property-host`, `/images/dasher`, `/images/merchant-dashboard`, `/images/admin-dashboard`). Confirm the actual folder names and count files in each.
 
 Before continuing, internally confirm you can state: the backend's tech stack, what the old plan currently claims, what PROPERTY_HOST is per the role doc, and exact image counts per folder. Do not proceed until this is solid.
 
@@ -34,7 +34,7 @@ The existing plan was generated WITHOUT visual access to Figma — the fetch fai
 
 6. **DRIVER, "Dasher", and "Chopper" are the same role.** Backend enum is DRIVER. "Dasher"/"Chopper" are display labels only — not separate roles, permissions, or enum values. No separate logic, models, or endpoints. Document this explicitly.
 
-7. **For PROPERTY_HOST screens**, cross-check every image in /images/property_host against Property_host_role.md, line by line. Flag any mismatch — this is the most important role to get right.
+7. **For PROPERTY_HOST screens**, cross-check every image in `/images/property-host` against Property_host_role.md, line by line. Flag any mismatch — this is the most important role to get right.
 
 ---
 
@@ -44,9 +44,9 @@ Work through this in order, using your full reasoning budget:
 
 a. Enumerate every file in every `/images/<role>/` folder. Record the exact count per folder.
 b. View every image, one at a time, per role folder. For each: note screen name/purpose, UI elements, data fields, status/action text.
-c. Cross-reference every property_host image against Property_host_role.md.
+c. Cross-reference every property-host image against Property_host_role.md.
 d. Across ALL role folders (not just driver/merchant/admin), search specifically for order-status text or hints, since the order flow screen is missing.
-e. Before writing your output, self-verify: does the count of images you actually reviewed match the count from step (a) for every folder? Did every property_host image get checked against the doc? Did the order-status search cover every folder, not just the obvious ones?
+e. Before writing your output, self-verify: does the count of images you actually reviewed match the count from step (a) for every folder? Did every property-host image get checked against the doc? Did the order-status search cover every folder, not just the obvious ones?
 
 Then output:
 
