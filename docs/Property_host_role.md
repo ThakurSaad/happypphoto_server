@@ -28,7 +28,7 @@ This workflow bridges the gap between a short-term rental host and a delivery se
 
 ### Phase 4: Fulfillment
 
-1.  **Chopper Assignment:** Once approved, the order becomes visible to the "Chopper" role.
+1.  **Chopper Assignment:** Once approved, the order becomes visible to the "Chopper/Driver" role.
 2.  **Address Disclosure:** Only at this stage is the physical address revealed to the Chopper for navigation.
 3.  **Completion:** The Chopper delivers within the PM’s specified window.
 
@@ -54,7 +54,7 @@ graph TD
     I --> J[PM Clicks Approve]
 
     %% Phase 4: Fulfillment
-    J --> K[Order Sent to Chopper]
-    K --> L[Physical Address Revealed to Chopper]
+    J --> K[Order Sent to Chopper/Driver]
+    K --> L[Physical Address Revealed to Chopper/Driver]
     L --> M[Successful Delivery]
 ```
