@@ -9,6 +9,9 @@ const EnumUserRole = {
 const EnumPaymentStatus = {
   SUCCEEDED: "succeeded",
   UNPAID: "unpaid",
+  REFUNDED: "refunded",
+  PARTIALLY_REFUNDED: "partially_refunded",
+  FAILED: "failed",
 };
 
 const EnumSocketEvent = {
@@ -21,6 +24,9 @@ const EnumSocketEvent = {
 
   START_CHAT: "start_chat",
   SEND_MESSAGE: "send_message",
+
+  SUBSCRIBE_DRIVER_LOCATION: "subscribe_driver_location",
+  UNSUBSCRIBE_DRIVER_LOCATION: "unsubscribe_driver_location",
 };
 
 const EnumLoginProvider = {
@@ -34,10 +40,52 @@ const EnumUserAccountStatus = {
   UNVERIFIED: "unverified",
 };
 
+const EnumOrderStatus = {
+  PENDING: "pending",
+  PENDING_HOST_APPROVAL: "pending_host_approval",
+  APPROVED: "approved",
+  ACCEPTED_BY_MERCHANT: "accepted_by_merchant",
+  PREPARING: "preparing",
+  READY_FOR_PICKUP: "ready_for_pickup",
+  DRIVER_ASSIGNED: "driver_assigned",
+  PICKED_UP: "picked_up",
+  OUT_FOR_DELIVERY: "out_for_delivery",
+  DELIVERED: "delivered",
+  CANCELLED: "cancelled",
+};
+
+const EnumDeliveryRequestStatus = {
+  PENDING: "pending",
+  APPROVED: "approved",
+  REJECTED: "rejected",
+  FORCE_APPROVED: "force_approved",
+};
+
+const EnumPayoutStatus = {
+  PENDING: "pending",
+  APPROVED: "approved",
+  PROCESSING: "processing",
+  COMPLETED: "completed",
+  REJECTED: "rejected",
+};
+
+const EnumPayoutType = {
+  WEEKLY_PAYOUT: "weekly_payout",
+  MANUAL_WITHDRAWAL: "manual_withdrawal",
+};
+
 const EnumVehicleType = {
-  CAR: "CAR",
-  VAN: "VAN",
-  TRUCK: "TRUCK",
+  BICYCLE: "bicycle",
+  SCOOTER: "scooter",
+  CAR: "car",
+};
+
+const EnumPropertyType = {
+  APARTMENT: "apartment",
+  VACATION_RENTAL: "vacation_rental",
+  HOUSE: "house",
+  CONDO: "condo",
+  OTHER: "other",
 };
 
 const EnumApplicationStatus = {
@@ -46,9 +94,16 @@ const EnumApplicationStatus = {
   REJECTED: "rejected",
 };
 
-const EnumReviewType = {};
+const EnumProductStatus = {
+  ACTIVE: "active",
+  OUT_OF_STOCK: "out_of_stock",
+  DISABLED: "disabled",
+};
 
-const EnumProductStatus = {};
+const EnumReviewType = {
+  MERCHANT: "merchant",
+  DRIVER: "driver",
+};
 
 export {
   EnumUserRole,
@@ -56,8 +111,13 @@ export {
   EnumSocketEvent,
   EnumLoginProvider,
   EnumUserAccountStatus,
+  EnumOrderStatus,
+  EnumDeliveryRequestStatus,
+  EnumPayoutStatus,
+  EnumPayoutType,
   EnumVehicleType,
+  EnumPropertyType,
   EnumApplicationStatus,
-  EnumReviewType,
   EnumProductStatus,
+  EnumReviewType,
 };
