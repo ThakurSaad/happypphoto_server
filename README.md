@@ -140,6 +140,27 @@ sequenceDiagram
 
 The repository employs centralized and graceful error handling strategies. Using an `ApiError` utility (combining http-status codes and custom messages), any errors thrown within modules are bubbled up to `globalErrorHandler`.
 
+```mermaid
+flowchart TD
+    Controller[Controller / Service] -->|Throws Error| CatchAsync[catchAsync wrapper]
+    CatchAsync --> Global[globalErrorHandler middleware]
+    
+    Global --> CheckType{Error Type?}
+    CheckType -->|ValidationError| HandleVal[handleValidationError]
+    CheckType -->|CastError| HandleCast[handleCastError]
+    CheckType -->|MulterError| HandleMulter[handleMulterError]
+    CheckType -->|ApiError| HandleApi[Extract Status & Message]
+    CheckType -->|Other| Generic[Generic 500 Error]
+    
+    HandleVal --> Format[Format into Standard JSON]
+    HandleCast --> Format
+    HandleMulter --> Format
+    HandleApi --> Format
+    Generic --> Format
+    
+    Format --> Response[Send Consistent Response to Client]
+```
+
 - Auto-handles `ValidationError`, `CastError`, `MulterError`, `DuplicateKeyError`, etc.
 - Parses backend-specific errors and formats them into a strict, predictable JSON interface for frontend consumption:
   ```json
