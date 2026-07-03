@@ -360,7 +360,8 @@ const changePassword = async (
     throw new ApiError(status.BAD_REQUEST, "Old password is incorrect");
   }
 
-  await Auth.updateOne({ email }, { password: newPassword });
+  const hashedPassword = await hashPass(newPassword);
+  await Auth.updateOne({ email }, { password: hashedPassword });
 };
 
 const updateFieldsWithCron = async (check: "activation" | "verification") => {

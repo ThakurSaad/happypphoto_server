@@ -50,6 +50,7 @@ const config = {
   },
   stripe: {
     stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+    stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET,
   },
   variables: {
     email_temp_image: process.env.EMAIL_TEMP_IMAGE,
