@@ -6,6 +6,27 @@ This document serves as a comprehensive technical overview of the current projec
 
 This project is a backend RESTful API built on the **Node.js** runtime using the **Express.js** framework with **TypeScript**. It implements a **Modular Monolith Architecture** meaning the business logic is split by domains (e.g., `user`, `auth`, `product`), and each domain has its own encapsulated components (Controllers, Services, Models, Routes).
 
+```mermaid
+graph TD
+    Client[Client / Frontend] -->|HTTP / REST| API[Express API Router]
+    Client -->|WebSocket| Socket[Socket.io Server]
+    
+    API --> Middleware[Global Middleware & Error Handler]
+    
+    Middleware --> Modules
+    
+    subgraph Modules [Domain Modules]
+        Auth[Auth Module]
+        User[User Module]
+        Product[Product Module]
+        Admin[Admin Module]
+        Others[Other Modules...]
+    end
+    
+    Modules --> DB[(MongoDB)]
+    Socket --> DB
+```
+
 ## 2. Technology Stack
 
 - **Language:** TypeScript
@@ -24,7 +45,30 @@ This project is a backend RESTful API built on the **Node.js** runtime using the
 
 ## 3. Directory Structure
 
+```mermaid
+graph LR
+    Root[Project Root] --> Src[src/]
+    Root --> ConfigFiles[.env, package.json, tsconfig.json, eslint]
+    
+    Src --> App[app/]
+    Src --> ConfigDir[config/]
+    Src --> Conn[connection/]
+    Src --> Err[error/]
+    Src --> Mail[mail/]
+    Src --> Util[util/]
+    Src --> CoreFiles[app.ts, server.ts]
+
+    App --> Middleware[middleware/]
+    App --> Module[module/]
+    App --> Routes[routes/]
+
+    Module --> Domains[admin, auth, chat, feedback, manage, notification, product, review, user]
 ```
+
+<details>
+<summary><strong>Click to view detailed folder tree</strong></summary>
+
+```text
 ├── src/
 │   ├── app/
 │   │   ├── middleware/       # Shared Express middlewares (e.g., Auth checkers, Global Error Handlers, File Uploaders)
@@ -57,6 +101,7 @@ This project is a backend RESTful API built on the **Node.js** runtime using the
 ├── eslint.config.mjs         # ESLint configuration
 └── package.json              # Includes dependency manifests and dev scripts (e.g., `make:file`)
 ```
+</details>
 
 ## 4. Core System Workflows
 
@@ -66,6 +111,27 @@ The auth system uses a multi-layered approach involving **Two Databases Collecti
 
 - `Auth`: Central authority for system credentials. Holds `email`, `password`, `role` (ADMIN, USER), OTP codes, and activation statuses.
 - `User` | `Admin`: Sub-profile attachments tied via the `authId`. These maintain separate, domain-specific profile details without polluting credentials logic.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant API as Auth API
+    participant Mail as Nodemailer
+    participant DB as MongoDB
+
+    User->>API: 1. Register (Email, Password)
+    API->>API: Generate 3-digit OTP
+    API->>DB: 2. Store Inactive Auth Record
+    API->>Mail: 3. Dispatch Email
+    Mail-->>User: Delivers OTP
+
+    User->>API: 4. Submit OTP for Activation
+    API->>DB: 5. Verify OTP & Expiry
+    API->>DB: 6. Update State to 'Active'
+    API->>API: Generate JWTs
+    API-->>User: 7. Return Access & Refresh Tokens
+```
+
 - **Registration Flow:** User registers -> System generates a 3-digit activation code -> Sends code to email (Nodemailer) -> Stores inactive user state.
 - **Activation Flow:** User inputs OTP -> System verifies OTP expiry -> State transitions to active -> JWT (Access/Refresh pairs) issued.
 - Periodic cleanup runs in the background (`node-cron`) to prune unverified, expired OTP credentials from the DB.
