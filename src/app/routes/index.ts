@@ -8,6 +8,7 @@ import FeedbackRoutes from "../module/feedback/feedback.routes";
 import ReviewRoutes from "../module/review/review.routes";
 import ChatRoutes from "../module/chat/chat.routes";
 import ProductRoutes from "../module/product/product.routes";
+import PropertyRoutes from "../module/property/property.routes";
 
 const router = express.Router();
 
@@ -47,6 +48,10 @@ const moduleRoutes = [
   {
     path: "/product",
     route: ProductRoutes,
+  },
+  {
+    path: "/property",
+    route: PropertyRoutes,
   },
 ];
 
