@@ -34,10 +34,30 @@ const EnumUserAccountStatus = {
   UNVERIFIED: "unverified",
 };
 
+const EnumVehicleType = {
+  CAR: "CAR",
+  VAN: "VAN",
+  TRUCK: "TRUCK",
+};
+
+const EnumApplicationStatus = {
+  PENDING: "pending",
+  APPROVED: "approved",
+  REJECTED: "rejected",
+};
+
+const EnumReviewType = {};
+
+const EnumProductStatus = {};
+
 export {
   EnumUserRole,
   EnumPaymentStatus,
   EnumSocketEvent,
   EnumLoginProvider,
   EnumUserAccountStatus,
+  EnumVehicleType,
+  EnumApplicationStatus,
+  EnumReviewType,
+  EnumProductStatus,
 };

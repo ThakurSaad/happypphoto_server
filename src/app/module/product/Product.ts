@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { FoodProduct } from "./product.interface";
+import { EnumProductStatus } from "../../../util/enum";
 
 const productSchema = new Schema<FoodProduct>(
   {
@@ -32,11 +33,23 @@ const productSchema = new Schema<FoodProduct>(
       type: String,
       required: true,
     },
+    isAvailable: {
+      type: Boolean,
+      default: true,
+    },
+    status: {
+      type: String,
+      enum: Object.values(EnumProductStatus),
+      default: "active",
+    },
   },
   {
     timestamps: true,
   },
 );
 
-export const Product = model<FoodProduct>("Product", productSchema);
+productSchema.index({ merchant: 1 });
+productSchema.index({ category: 1 });
+productSchema.index({ name: "text", description: "text" });
 
+export const Product = model<FoodProduct>("Product", productSchema);
