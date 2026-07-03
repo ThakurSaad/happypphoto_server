@@ -137,7 +137,7 @@ const updateProperty = async (req: Request) => {
   const updatedProperty = await Property.findByIdAndUpdate(
     data.propertyId,
     updateData,
-    { new: true, runValidators: true },
+    { returnDocument: "after", runValidators: true },
   );
 
   if (replaceImage && existingProperty.propertyImage) {
@@ -242,7 +242,7 @@ const updateDeliveryRules = async (
       deliveryRules,
       ...(Object.keys(guestStayDates).length > 0 && { guestStayDates }),
     },
-    { new: true, runValidators: true },
+    { returnDocument: "after", runValidators: true },
   );
 
   return updatedProperty;
