@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import type { IUser } from "./user.interface";
-import { EnumUserRole } from "../../../util/enum";
+import { EnumUserRole, EnumVehicleType, EnumApplicationStatus } from "../../../util/enum";
 
 const UserSchema = new Schema<IUser>(
   {
@@ -39,14 +39,29 @@ const UserSchema = new Schema<IUser>(
       default: false,
     },
 
-    // property_host specific field
+    // property_host specific fields
     businessName: {
       type: String,
     },
+    taxId: {
+      type: String,
+    },
+    businessAddress: {
+      type: String,
+    },
 
-    // driver specific field
+    // driver specific fields
     isApproved: {
       type: Boolean,
+    },
+    applicationStatus: {
+      type: String,
+      enum: Object.values(EnumApplicationStatus),
+      default: "pending",
+    },
+    vehicleType: {
+      type: String,
+      enum: Object.values(EnumVehicleType),
     },
     licenseNumber: {
       type: String,
@@ -74,7 +89,28 @@ const UserSchema = new Schema<IUser>(
       },
     },
 
-    // merchant specific field
+    // shared driver + merchant fields
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
+    },
+    totalDeliveries: {
+      type: Number,
+      default: 0,
+    },
+    stripeConnectAccountId: {
+      type: String,
+    },
+    stripeConnectOnboarded: {
+      type: Boolean,
+      default: false,
+    },
+
+    // merchant specific fields
     storeName: {
       type: String,
     },
@@ -124,6 +160,22 @@ const UserSchema = new Schema<IUser>(
     storeAveragePrepTime: {
       type: Number,
     },
+    storePhoneNumber: {
+      type: String,
+    },
+    storeSupportEmail: {
+      type: String,
+    },
+    storeDeliveryRadius: {
+      type: Number,
+    },
+    storeMinimumOrder: {
+      type: Number,
+    },
+    storeIsOpen: {
+      type: Boolean,
+      default: true,
+    },
     store_logo: {
       type: String,
     },
@@ -139,11 +191,21 @@ const UserSchema = new Schema<IUser>(
     merchant_id_card_image: {
       type: String,
     },
+    businessHours: {
+      type: Schema.Types.Mixed,
+    },
   },
   {
     timestamps: true,
   },
 );
+
+// Indexes
+UserSchema.index({ authId: 1 });
+UserSchema.index({ email: 1 });
+UserSchema.index({ role: 1 });
+UserSchema.index({ locationCoordinates: "2dsphere" });
+UserSchema.index({ storeLocationCoordinates: "2dsphere" });
 
 const User = model<IUser>("User", UserSchema);
 

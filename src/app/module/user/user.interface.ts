@@ -1,5 +1,13 @@
 import type { Types, Document } from "mongoose";
 
+export interface IBusinessHours {
+  [day: string]: {
+    open: string;
+    close: string;
+    isOpen: boolean;
+  };
+}
+
 export interface IUser extends Document {
   authId: Types.ObjectId;
   name: string;
@@ -13,9 +21,13 @@ export interface IUser extends Document {
 
   // property_host specific fields
   businessName?: string;
+  taxId?: string;
+  businessAddress?: string;
 
   // driver specific fields
   isApproved?: boolean;
+  applicationStatus?: string;
+  vehicleType?: string;
   licenseNumber?: string;
   plateNumber?: string;
   drivingLicense_image?: string;
@@ -28,6 +40,13 @@ export interface IUser extends Document {
     };
     coordinates: [number, number];
   };
+
+  // shared driver + merchant fields
+  averageRating?: number;
+  totalReviews?: number;
+  totalDeliveries?: number;
+  stripeConnectAccountId?: string;
+  stripeConnectOnboarded?: boolean;
 
   // merchant specific fields
   storeName?: string;
@@ -47,9 +66,15 @@ export interface IUser extends Document {
   storeOpeningTime?: string;
   storeClosingTime?: string;
   storeAveragePrepTime?: number;
+  storePhoneNumber?: string;
+  storeSupportEmail?: string;
+  storeDeliveryRadius?: number;
+  storeMinimumOrder?: number;
+  storeIsOpen?: boolean;
   store_logo?: string;
   store_banner_image?: string;
   store_front_image?: string;
   trade_license_document?: string;
   merchant_id_card_image?: string;
+  businessHours?: IBusinessHours;
 }

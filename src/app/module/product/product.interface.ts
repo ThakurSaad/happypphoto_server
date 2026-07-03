@@ -8,5 +8,6 @@ export interface FoodProduct {
   price: number;
   quantity: number;
   description: string;
+  isAvailable: boolean;
+  status: string;
 }
-
