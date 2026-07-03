@@ -16,7 +16,7 @@ router
   .post("/reset-password", AuthController.resetPassword)
   .patch(
     "/change-password",
-    auth(config.auth_level.user),
+    auth(config.auth_level.all),
     AuthController.changePassword,
   );
 
