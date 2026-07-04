@@ -1,5 +1,4 @@
-const status = require("http-status");
-// import { default: status } from "http-status";
+const { status } = require("http-status");
 import QueryBuilder, { QueryParams } from "../../../builder/queryBuilder";
 import ApiError from "../../../error/ApiError";
 import validateFields from "../../../util/validateFields";
