@@ -1,4 +1,4 @@
-const { status } = require("http-status");
+const status = require("http-status");
 import ApiError from "../../../error/ApiError";
 import validateFields from "../../../util/validateFields";
 import Payment from "./Payment";
