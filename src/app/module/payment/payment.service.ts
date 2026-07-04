@@ -6,11 +6,10 @@ import Order from "../order/Order";
 import User from "../user/User";
 import { StripeService } from "./stripe.service";
 import { logger } from "../../../util/logger";
+import Payout from "./Payout";
+import QueryBuilder, { QueryParams } from "../../../builder/queryBuilder";
 
-const createIntent = async (
-  userData: any,
-  payload: Record<string, any>,
-) => {
+const createIntent = async (userData: any, payload: Record<string, any>) => {
   validateFields(payload, ["orderId"]);
 
   const order = await Order.findById(payload.orderId);
@@ -71,10 +70,7 @@ const createIntent = async (
   };
 };
 
-const getPayment = async (
-  userData: any,
-  query: Record<string, any>,
-) => {
+const getPayment = async (userData: any, query: Record<string, any>) => {
   let payment;
 
   if (query.paymentId) {
@@ -86,10 +82,7 @@ const getPayment = async (
       .populate({ path: "orderId", select: "orderId status total" })
       .lean();
   } else {
-    throw new ApiError(
-      status.BAD_REQUEST,
-      "paymentId or orderId is required",
-    );
+    throw new ApiError(status.BAD_REQUEST, "paymentId or orderId is required");
   }
 
   if (!payment) {
@@ -99,10 +92,7 @@ const getPayment = async (
   return payment;
 };
 
-const refund = async (
-  userData: any,
-  payload: Record<string, any>,
-) => {
+const refund = async (userData: any, payload: Record<string, any>) => {
   validateFields(payload, ["paymentId"]);
 
   const payment = await Payment.findById(payload.paymentId);
@@ -130,9 +120,10 @@ const refund = async (
   payment.refundId = stripeRefund.id;
   payment.refundAmount = stripeRefund.amount / 100;
   payment.refundReason = payload.reason || "requested_by_admin";
-  payment.status = refundAmountCents && refundAmountCents < payment.amount
-    ? "partially_refunded"
-    : "refunded";
+  payment.status =
+    refundAmountCents && refundAmountCents < payment.amount
+      ? "partially_refunded"
+      : "refunded";
   await payment.save();
 
   return payment;
@@ -254,9 +245,7 @@ const processOrderPayouts = async (orderId: string) => {
 
   // Transfer to driver
   if (driver?.stripeConnectAccountId && driver.stripeConnectOnboarded) {
-    const driverAmountCents = Math.round(
-      (order.driverPayout || 0) * 100,
-    );
+    const driverAmountCents = Math.round((order.driverPayout || 0) * 100);
     if (driverAmountCents > 0) {
       try {
         await StripeService.createTransfer(
@@ -277,6 +266,187 @@ const processOrderPayouts = async (orderId: string) => {
   }
 };
 
+const requestWithdrawal = async (
+  userData: any,
+  payload: Record<string, any>,
+) => {
+  validateFields(payload, ["amount"]);
+
+  const amount = Number(payload.amount);
+  if (amount < 10) {
+    throw new ApiError(status.BAD_REQUEST, "Minimum withdrawal amount is $10");
+  }
+
+  const user = await User.findById(userData.userId)
+    .select("stripeConnectAccountId stripeConnectOnboarded")
+    .lean();
+
+  if (!user?.stripeConnectAccountId || !user.stripeConnectOnboarded) {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      "You must complete Stripe Connect onboarding before withdrawing",
+    );
+  }
+
+  // Calculate available balance
+  const totalEarnings = await calculateTotalEarnings(
+    userData.userId,
+    userData.role,
+  );
+  const totalWithdrawn = await Payout.aggregate([
+    {
+      $match: {
+        userId: user._id,
+        status: { $in: ["pending", "approved", "processing", "completed"] },
+      },
+    },
+    { $group: { _id: null, total: { $sum: "$amount" } } },
+  ]);
+
+  const withdrawn = totalWithdrawn[0]?.total || 0;
+  const available = totalEarnings - withdrawn;
+
+  if (amount > available) {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      `Insufficient balance. Available: $${available.toFixed(2)}`,
+    );
+  }
+
+  const payout = await Payout.create({
+    userId: userData.userId,
+    amount,
+    type: "manual_withdrawal",
+    status: "pending",
+  });
+
+  return payout;
+};
+
+const getMyPayouts = async (userData: any, query: QueryParams) => {
+  const filter: Record<string, any> = { userId: userData.userId };
+  if (query.status) {
+    filter.status = query.status;
+    delete query.status;
+  }
+
+  const payoutQuery = new QueryBuilder(Payout.find(filter).lean(), query)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const [payouts, meta] = await Promise.all([
+    payoutQuery.modelQuery,
+    payoutQuery.countTotal(),
+  ]);
+
+  return { meta, payouts };
+};
+
+const calculateTotalEarnings = async (
+  userId: string,
+  role: string,
+): Promise<number> => {
+  const field = role === "MERCHANT" ? "merchantId" : "driverId";
+  const earningsField =
+    role === "MERCHANT" ? "merchantNetEarnings" : "driverPayout";
+
+  const result = await Order.aggregate([
+    {
+      $match: {
+        [field]: new (require("mongoose").Types.ObjectId)(userId),
+        status: "delivered",
+      },
+    },
+    { $group: { _id: null, total: { $sum: `$${earningsField}` } } },
+  ]);
+
+  return result[0]?.total || 0;
+};
+
+const getMyEarnings = async (userData: any, query: Record<string, any>) => {
+  const period = query.period || "week";
+  const field = userData.role === "MERCHANT" ? "merchantId" : "driverId";
+  const earningsField =
+    userData.role === "MERCHANT" ? "merchantNetEarnings" : "driverPayout";
+
+  let dateFilter: Record<string, any> = {};
+  const now = new Date();
+
+  switch (period) {
+    case "today":
+      dateFilter = {
+        createdAt: {
+          $gte: new Date(now.setHours(0, 0, 0, 0)),
+        },
+      };
+      break;
+    case "week": {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      dateFilter = { createdAt: { $gte: weekAgo } };
+      break;
+    }
+    case "month": {
+      const monthAgo = new Date();
+      monthAgo.setMonth(monthAgo.getMonth() - 1);
+      dateFilter = { createdAt: { $gte: monthAgo } };
+      break;
+    }
+  }
+
+  const result = await Order.aggregate([
+    {
+      $match: {
+        [field]: new (require("mongoose").Types.ObjectId)(userData.userId),
+        status: "delivered",
+        ...dateFilter,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: `$${earningsField}` },
+        orderCount: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const total = result[0]?.total || 0;
+  const orderCount = result[0]?.orderCount || 0;
+
+  return {
+    total: Math.round(total * 100) / 100,
+    perOrder: orderCount > 0 ? Math.round((total / orderCount) * 100) / 100 : 0,
+    orderCount,
+  };
+};
+
+const getMyTransactions = async (userData: any, query: QueryParams) => {
+  const orderQuery = new QueryBuilder(
+    Order.find({
+      merchantId: userData.userId,
+      status: "delivered",
+    })
+      .select(
+        "orderId subtotal platformCommission merchantNetEarnings total deliveryFee createdAt",
+      )
+      .lean(),
+    query,
+  )
+    .sort()
+    .paginate()
+    .fields();
+
+  const [transactions, meta] = await Promise.all([
+    orderQuery.modelQuery,
+    orderQuery.countTotal(),
+  ]);
+
+  return { meta, transactions };
+};
+
 const PaymentService = {
   createIntent,
   getPayment,
@@ -284,6 +454,10 @@ const PaymentService = {
   createConnectAccount,
   getConnectStatus,
   processOrderPayouts,
+  requestWithdrawal,
+  getMyPayouts,
+  getMyEarnings,
+  getMyTransactions,
 };
 
 export { PaymentService };
