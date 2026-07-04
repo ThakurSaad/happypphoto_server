@@ -174,7 +174,6 @@ OrderSchema.index({ merchantId: 1 });
 OrderSchema.index({ driverId: 1 });
 OrderSchema.index({ propertyHostId: 1 });
 OrderSchema.index({ status: 1 });
-OrderSchema.index({ orderId: 1 }, { unique: true });
 
 // Pre-save hook to auto-generate orderId
 OrderSchema.pre("save", async function () {

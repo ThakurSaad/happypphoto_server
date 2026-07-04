@@ -19,7 +19,7 @@ const app = express();
 
 app.use(cors(corsOptions));
 app.post(
-  "/payment/webhook",
+  "/stripe/webhook",
   express.raw({ type: "application/json" }),
   handleWebhook,
 );
