@@ -5,12 +5,9 @@ import Order from "./Order";
 import DeliveryRequest from "./DeliveryRequest";
 import Cart from "../cart/Cart";
 import Property from "../property/Property";
-import User from "../user/User";
 import { Product } from "../product/Product";
 import QueryBuilder, { QueryParams } from "../../../builder/queryBuilder";
-import { validateTransition } from "../../../util/orderStateMachine";
 import postNotification from "../../../util/postNotification";
-import type { Request } from "express";
 
 const DELIVERY_FEE = 5;
 const SERVICE_FEE = 2;
