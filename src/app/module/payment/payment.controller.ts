@@ -60,12 +60,65 @@ const getConnectStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const requestWithdrawal = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  const result = await PaymentService.requestWithdrawal(req.user, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Withdrawal request submitted",
+    data: result,
+  });
+});
+
+const getMyPayouts = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  const result = await PaymentService.getMyPayouts(req.user, req.query as any);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Payouts retrieved",
+    data: result.payouts,
+    meta: result.meta,
+  });
+});
+
+const getMyEarnings = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  const result = await PaymentService.getMyEarnings(req.user, req.query);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Earnings retrieved",
+    data: result,
+  });
+});
+
+const getMyTransactions = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  const result = await PaymentService.getMyTransactions(
+    req.user,
+    req.query as any,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Transactions retrieved",
+    data: result.transactions,
+    meta: result.meta,
+  });
+});
+
 const PaymentController = {
   createIntent,
   getPayment,
   refundPayment,
   createConnectAccount,
   getConnectStatus,
+  requestWithdrawal,
+  getMyPayouts,
+  getMyEarnings,
+  getMyTransactions,
 };
 
 export { PaymentController };
