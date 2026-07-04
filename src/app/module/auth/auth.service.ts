@@ -413,8 +413,10 @@ const hashPass = async (newPassword: string) => {
 // Unset isVerified, verificationCode, verificationCodeExpire field for expired verification code
 cron.schedule("* * * * *", async () => {
   try {
-    updateFieldsWithCron("activation");
-    updateFieldsWithCron("verification");
+    await Promise.all([
+      updateFieldsWithCron("activation"),
+      updateFieldsWithCron("verification"),
+    ]);
   } catch (error) {
     logger.error("Error removing expired code:", error);
   }

@@ -81,6 +81,9 @@ const AuthSchema = new Schema<IAuth, AuthModel>(
   },
 );
 
+AuthSchema.index({ activationCodeExpire: 1 });
+AuthSchema.index({ verificationCodeExpire: 1 });
+
 AuthSchema.statics.isAuthExist = async function (email: string) {
   return await this.findOne(
     { email },
