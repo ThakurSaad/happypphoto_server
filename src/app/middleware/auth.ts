@@ -1,5 +1,5 @@
+const { status } = require("http-status");
 import type { NextFunction, Request, Response } from "express";
-const httpStatus = require("http-status");
 import config from "../../config";
 import ApiError from "../../error/ApiError";
 import { jwtHelpers } from "../../util/jwtHelpers";
@@ -14,12 +14,12 @@ const auth =
       if (!tokenWithBearer && !isAccessible) return next();
       if (!tokenWithBearer) {
         throw new ApiError(
-          httpStatus.UNAUTHORIZED,
+          status.UNAUTHORIZED,
           "You are not authorized for this role",
         );
       }
       if (!tokenWithBearer.startsWith("Bearer")) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token format");
+        throw new ApiError(status.UNAUTHORIZED, "Invalid token format");
       }
 
       const token = tokenWithBearer.split(" ")[1].trim();
@@ -32,12 +32,12 @@ const auth =
 
       const isExist = await Auth.findById(verifyUser.authId);
       if (!isExist) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
+        throw new ApiError(status.UNAUTHORIZED, "You are not authorized");
       }
 
       if (roles.length && !roles.includes(verifyUser.role)) {
         throw new ApiError(
-          httpStatus.FORBIDDEN,
+          status.FORBIDDEN,
           "Access Forbidden: You do not have permission to perform this action",
         );
       }
