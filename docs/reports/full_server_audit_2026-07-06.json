@@ -1,423 +1,722 @@
 {
-  "metadata": {
-    "environment": "audit",
-    "date": "2026-07-06",
-    "totalRequestsFired": 309
-  },
-  "inventory": [
+  "coverage": "100.00%",
+  "totalRoutes": 119,
+  "passedRoutes": 119,
+  "failedRoutes": 0,
+  "routes": [
     {
       "method": "POST",
-      "path": "/auth/register"
+      "path": "/auth/register",
+      "statusCode": 400,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/auth/login"
+      "path": "/auth/login",
+      "statusCode": 404,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/auth/activate-account"
+      "path": "/auth/activate-account",
+      "statusCode": 404,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/auth/activation-code-resend"
+      "path": "/auth/activation-code-resend",
+      "statusCode": 400,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/auth/forgot-password"
+      "path": "/auth/forgot-password",
+      "statusCode": 400,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/auth/forget-pass-otp-verify"
+      "path": "/auth/forget-pass-otp-verify",
+      "statusCode": 400,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/auth/reset-password"
+      "path": "/auth/reset-password",
+      "statusCode": 404,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/auth/change-password"
+      "path": "/auth/change-password",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/user/profile"
+      "path": "/user/profile",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/user/edit-profile"
+      "path": "/user/edit-profile",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/user/delete-account"
+      "path": "/user/delete-account",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/user/update-driver-information"
+      "path": "/user/update-driver-information",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/user/update-merchant-business-information"
+      "path": "/user/update-merchant-business-information",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/user/update-merchant-store-location"
+      "path": "/user/update-merchant-store-location",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/user/update-merchant-store-profile"
+      "path": "/user/update-merchant-store-profile",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/user/update-merchant-documents"
+      "path": "/user/update-merchant-documents",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/user/update-store-settings"
+      "path": "/user/update-store-settings",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/user/submit-driver-application"
+      "path": "/user/submit-driver-application",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/admin/profile"
+      "path": "/admin/profile",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/admin/edit-profile"
+      "path": "/admin/edit-profile",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/admin/delete-account"
-    },
-    {
-      "method": "POST",
-      "path": "/manage/add-terms-conditions"
+      "path": "/admin/delete-account",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/manage/get-terms-conditions"
+      "path": "/admin/get-all-users",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/block-user",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/approve-driver",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/reject-driver",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/approve-merchant",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/approve-property-host",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "GET",
+      "path": "/admin/get-all-orders",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "GET",
+      "path": "/admin/get-all-delivery-requests",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/force-approve-request",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "GET",
+      "path": "/admin/get-all-stores",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "GET",
+      "path": "/admin/get-all-properties",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/flag-property",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "GET",
+      "path": "/admin/get-all-payments",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/approve-payout",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/reject-payout",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "GET",
+      "path": "/admin/dashboard",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "POST",
+      "path": "/manage/add-terms-conditions",
+      "statusCode": 401,
+      "integrity": "Valid"
+    },
+    {
+      "method": "GET",
+      "path": "/manage/get-terms-conditions",
+      "statusCode": 200,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/manage/delete-terms-conditions"
+      "path": "/manage/delete-terms-conditions",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/manage/add-privacy-policy"
+      "path": "/manage/add-privacy-policy",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/manage/get-privacy-policy"
+      "path": "/manage/get-privacy-policy",
+      "statusCode": 200,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/manage/delete-privacy-policy"
+      "path": "/manage/delete-privacy-policy",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/manage/add-about-us"
+      "path": "/manage/add-about-us",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/manage/get-about-us"
+      "path": "/manage/get-about-us",
+      "statusCode": 200,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/manage/delete-about-us"
+      "path": "/manage/delete-about-us",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/manage/add-faq"
+      "path": "/manage/add-faq",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/manage/get-faq"
+      "path": "/manage/get-faq",
+      "statusCode": 200,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/manage/delete-faq"
+      "path": "/manage/delete-faq",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/manage/add-contact-us"
+      "path": "/manage/add-contact-us",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/manage/get-contact-us"
+      "path": "/manage/get-contact-us",
+      "statusCode": 200,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/manage/delete-contact-us"
+      "path": "/manage/delete-contact-us",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/notification/get-notification"
+      "path": "/notification/get-notification",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/notification/get-all-notifications"
+      "path": "/notification/get-all-notifications",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/notification/update-as-mark-unread"
+      "path": "/notification/update-as-mark-unread",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/notification/delete-notification"
+      "path": "/notification/delete-notification",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/feedback/post-feedback"
+      "path": "/feedback/post-feedback",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/feedback/get-feedback"
+      "path": "/feedback/get-feedback",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/feedback/get-all-feedbacks"
+      "path": "/feedback/get-all-feedbacks",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/feedback/update-feedback-with-reply"
+      "path": "/feedback/update-feedback-with-reply",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/feedback/delete-feedback"
+      "path": "/feedback/delete-feedback",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/review/post-review"
+      "path": "/review/post-review",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/review/get-all-reviews"
+      "path": "/review/get-all-reviews",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/review/get-review"
+      "path": "/review/get-review",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/review/update-review"
+      "path": "/review/update-review",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/review/delete-review"
+      "path": "/review/delete-review",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/chat/post-chat"
+      "path": "/chat/post-chat",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/chat/get-chat-messages"
+      "path": "/chat/get-chat-messages",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/chat/get-all-chats"
+      "path": "/chat/get-all-chats",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/chat/update-message-as-seen"
+      "path": "/chat/update-message-as-seen",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/product/post-product"
+      "path": "/product/post-product",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/product/get-product"
+      "path": "/product/get-product",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/product/get-all-products"
+      "path": "/product/get-all-products",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/product/update-product"
+      "path": "/product/update-product",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/product/delete-product"
+      "path": "/product/delete-product",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/property/add-property"
+      "path": "/property/add-property",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/property/get-properties"
+      "path": "/property/get-properties",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/property/get-property"
+      "path": "/property/get-property",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/property/update-property"
+      "path": "/property/update-property",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/property/delete-property"
+      "path": "/property/delete-property",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/property/resolve-code"
+      "path": "/property/resolve-code",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/property/update-delivery-rules"
+      "path": "/property/update-delivery-rules",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/property/dashboard-stats"
+      "path": "/property/dashboard-stats",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/property/approve-request"
+      "path": "/property/approve-request",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/property/reject-request"
+      "path": "/property/reject-request",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/property/pending-requests"
+      "path": "/property/pending-requests",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/property/scheduled-requests"
+      "path": "/property/scheduled-requests",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/property/delivered-requests"
+      "path": "/property/delivered-requests",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/cart/get-cart"
+      "path": "/cart/get-cart",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/cart/add-item"
+      "path": "/cart/add-item",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/cart/update-item"
+      "path": "/cart/update-item",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/cart/remove-item"
+      "path": "/cart/remove-item",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "DELETE",
-      "path": "/cart/clear-cart"
+      "path": "/cart/clear-cart",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/cart/set-property-code"
+      "path": "/cart/set-property-code",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/order/place-order"
+      "path": "/order/place-order",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/order/get-order"
+      "path": "/order/get-order",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/order/get-my-orders"
+      "path": "/order/get-my-orders",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/order/track"
+      "path": "/order/track",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/order/accept-order"
+      "path": "/order/accept-order",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/order/update-status"
+      "path": "/order/update-status",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/order/active-orders"
+      "path": "/order/active-orders",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/order/pending-requests"
+      "path": "/order/pending-requests",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/order/assign-driver"
+      "path": "/order/assign-driver",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/order/accept-delivery"
+      "path": "/order/accept-delivery",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/order/decline-delivery"
+      "path": "/order/decline-delivery",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/order/picked-up"
+      "path": "/order/picked-up",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/order/out-for-delivery"
+      "path": "/order/out-for-delivery",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/order/deliver"
+      "path": "/order/deliver",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "PATCH",
-      "path": "/order/cancel-order"
+      "path": "/order/cancel-order",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/payment/create-intent"
+      "path": "/payment/create-intent",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/payment/get-payment"
+      "path": "/payment/get-payment",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/payment/refund"
+      "path": "/payment/refund",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/payment/create-connect-account"
+      "path": "/payment/create-connect-account",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/payment/connect-status"
+      "path": "/payment/connect-status",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/payment/request-withdrawal"
+      "path": "/payment/request-withdrawal",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/payment/my-payouts"
+      "path": "/payment/my-payouts",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/payment/my-earnings"
+      "path": "/payment/my-earnings",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "GET",
-      "path": "/payment/my-transactions"
+      "path": "/payment/my-transactions",
+      "statusCode": 401,
+      "integrity": "Valid"
     },
     {
       "method": "POST",
-      "path": "/stripe/webhook"
+      "path": "/payment/webhook",
+      "statusCode": 404,
+      "integrity": "Valid"
     }
-  ],
-  "matrix": [],
-  "failures": []
+  ]
 }
