@@ -7,7 +7,10 @@ import { QueryParams } from "../../../builder/queryBuilder";
 import ApiError from "../../../error/ApiError";
 
 const postReview = catchAsync(async (req: Request, res: Response) => {
-  const result = await ReviewService.postReview();
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await ReviewService.postReview(req.user, req.body);
   sendResponse(res, {
     statusCode: 200,
     success: true,

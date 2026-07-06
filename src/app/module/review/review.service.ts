@@ -10,8 +10,49 @@ interface UserData {
   role: string;
 }
 
-const postReview = async () => {};
+import mongoose from "mongoose";
+import User from "../user/User";
 
+const postReview = async (
+  userData: UserData,
+  payload: Record<string, unknown>,
+) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    const review = await Review.create(
+      [{ ...payload, user: userData.userId }],
+      { session },
+    );
+
+    const targetUserId =
+      payload.reviewType === "merchant" ? payload.merchantId : payload.driverId;
+    if (!targetUserId)
+      throw new ApiError(status.BAD_REQUEST, "Target user ID is missing");
+
+    const targetUser = await User.findById(targetUserId).session(session);
+    if (!targetUser)
+      throw new ApiError(status.NOT_FOUND, "Target user not found");
+
+    const total = targetUser.totalReviews || 0;
+    const currentAvg = targetUser.averageRating || 0;
+
+    targetUser.averageRating =
+      (currentAvg * total + Number(payload.rating)) / (total + 1);
+    targetUser.totalReviews = total + 1;
+
+    await targetUser.save({ session });
+    await session.commitTransaction();
+
+    return review[0];
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+};
 const getAllReviews = async (userData: UserData, query: QueryParams) => {
   const queryObj =
     userData.role === EnumUserRole.ADMIN ? {} : { user: userData.userId };
@@ -45,7 +86,10 @@ const getReview = async (userData: UserData, query: { reviewId?: string }) => {
   return review;
 };
 
-const updateReview = async (userData: UserData, payload: Record<string, unknown>) => {
+const updateReview = async (
+  userData: UserData,
+  payload: Record<string, unknown>,
+) => {
   validateFields(payload, ["reviewId"]);
 
   const updateData = {
