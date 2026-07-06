@@ -73,10 +73,7 @@ const approveDriver = catchAsync(async (req: Request, res: Response) => {
 });
 
 const rejectDriver = catchAsync(async (req: Request, res: Response) => {
-  const result = await AdminService.rejectDriver(
-    req.body.userId,
-    req.body.reason,
-  );
+  const result = await AdminService.rejectDriver(req.body.userId);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

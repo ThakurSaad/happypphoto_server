@@ -320,7 +320,7 @@ const getScheduledRequests = async (userData: any, query: QueryParams) => {
   return { meta, requests };
 };
 
-const getDeliveredRequests = async (userData: any, query: QueryParams) => {
+const getDeliveredRequests = async (userData: any) => {
   // Get approved requests where the associated order has status "delivered"
   const requests = await DeliveryRequest.find({
     hostId: userData.userId,
