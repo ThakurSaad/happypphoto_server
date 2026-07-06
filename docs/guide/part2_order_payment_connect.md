@@ -7,6 +7,7 @@
 ## Step 24 — Create Order Interface
 
 ### What & Why
+
 Defines TypeScript types for the Order model and its OrderItem subdocument. This comes first in Domain 4 because both the Order model and all order-related services depend on these types. The interface captures every field from plan section 3.2.2.
 
 ### Code
@@ -76,12 +77,15 @@ export interface IOrder extends Document {
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - Making `driverId`, `propertyId`, `propertyHostId` required — these are optional. `driverId` is set during driver assignment; `propertyId`/`propertyHostId` only exist for property-code orders.
 
 ---
@@ -89,6 +93,7 @@ No TypeScript errors.
 ## Step 25 — Create Order Model
 
 ### What & Why
+
 The Mongoose schema for orders. Uses a `Counter` collection pattern for auto-incrementing the human-readable `orderId` (e.g., `ORD-1001`). Includes all necessary indexes for efficient queries by user, merchant, driver, host, and status.
 
 ### Code
@@ -313,12 +318,15 @@ export = Order;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Start server — `orders` and `counters` collections appear in MongoDB.
 
 ### Common Mistakes
+
 - Using `pre('validate')` instead of `pre('save')` for orderId generation — `pre('save')` is correct here because we need the counter before the document is saved.
 - Forgetting `upsert: true` on the Counter query — the first order ever created needs to auto-create the counter document.
 - The Counter starts at `1000` so the first order is `ORD-1001`.
@@ -328,6 +336,7 @@ Start server — `orders` and `counters` collections appear in MongoDB.
 ## Step 26 — Create DeliveryRequest Interface
 
 ### What & Why
+
 Types for the DeliveryRequest model that tracks property-host approval workflow.
 
 ### Code
@@ -360,12 +369,15 @@ export interface IDeliveryRequest extends Document {
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - None specific.
 
 ---
@@ -373,6 +385,7 @@ No TypeScript errors.
 ## Step 27 — Create DeliveryRequest Model
 
 ### What & Why
+
 Mongoose schema for delivery requests. Uses the same Counter pattern as Order for human-readable `requestId` (e.g., `REQ-2001`).
 
 ### Code
@@ -468,12 +481,15 @@ export = DeliveryRequest;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Start server — `deliveryrequests` collection appears.
 
 ### Common Mistakes
+
 - Using the same Counter `name` as orders — must use `"requestId"` not `"orderId"`. The Counter collection supports multiple named counters.
 
 ---
@@ -481,6 +497,7 @@ Start server — `deliveryrequests` collection appears.
 ## Step 28 — Create Order Status Transition Validator
 
 ### What & Why
+
 A state machine utility that validates legal order status transitions. Prevents invalid state changes (e.g., jumping from `pending` directly to `delivered`). Used by every endpoint that modifies order status.
 
 ### Code
@@ -503,10 +520,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   out_for_delivery: ["delivered"],
 };
 
-const validateTransition = (
-  currentStatus: string,
-  newStatus: string,
-): void => {
+const validateTransition = (currentStatus: string, newStatus: string): void => {
   const allowed = VALID_TRANSITIONS[currentStatus];
 
   if (!allowed) {
@@ -528,9 +542,11 @@ export { validateTransition, VALID_TRANSITIONS };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 ```typescript
 // Quick test:
 validateTransition("pending", "accepted_by_merchant"); // OK
@@ -538,6 +554,7 @@ validateTransition("pending", "delivered"); // Throws ApiError
 ```
 
 ### Common Mistakes
+
 - Adding `cancelled` to `picked_up` and `out_for_delivery` transitions — per the plan, once picked up, only ADMIN can cancel (handled separately in the cancel logic, not via state machine).
 - Forgetting `delivered` and `cancelled` are terminal states — no transitions OUT of them.
 
@@ -546,6 +563,7 @@ validateTransition("pending", "delivered"); // Throws ApiError
 ## Step 29 — Create Order Service — placeOrder
 
 ### What & Why
+
 The most critical business logic: converts a cart into one or more orders (one per merchant). Handles both direct-address and property-code flows. For property-code orders, creates DeliveryRequests and puts the order in `pending_host_approval`.
 
 ### Code
@@ -598,10 +616,7 @@ const placeOrder = async (userData: any, payload: Record<string, any>) => {
       isActive: true,
     });
     if (!property) {
-      throw new ApiError(
-        status.NOT_FOUND,
-        "Property not found or inactive",
-      );
+      throw new ApiError(status.NOT_FOUND, "Property not found or inactive");
     }
 
     // Guest stay validation
@@ -685,8 +700,10 @@ const placeOrder = async (userData: any, payload: Record<string, any>) => {
       });
     }
 
-    const platformCommission = Math.round(subtotal * PLATFORM_COMMISSION_RATE * 100) / 100;
-    const merchantNetEarnings = Math.round((subtotal - platformCommission) * 100) / 100;
+    const platformCommission =
+      Math.round(subtotal * PLATFORM_COMMISSION_RATE * 100) / 100;
+    const merchantNetEarnings =
+      Math.round((subtotal - platformCommission) * 100) / 100;
     const total = subtotal + DELIVERY_FEE + SERVICE_FEE;
 
     const orderData: Record<string, any> = {
@@ -765,10 +782,13 @@ export { OrderService };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 After routes are registered (Step 55), test with:
+
 ```
 POST /order/place-order
 Authorization: Bearer <user_token>
@@ -776,9 +796,11 @@ Content-Type: application/json
 
 { "deliveryAddress": "456 Oak Ave, Phoenix, AZ" }
 ```
+
 Expected: Array of created orders (one per merchant in cart), cart cleared.
 
 ### Common Mistakes
+
 - Forgetting to decrement product stock — if 2 users buy the last 3 items simultaneously, you get overselling. The `$inc: { quantity: -item.quantity }` handles this atomically.
 - Not rounding financial calculations — floating point issues (e.g., `10.00 * 0.15 = 1.4999999`). Use `Math.round(x * 100) / 100`.
 - Setting `deliveryAddress` on property-code orders — the address must NOT be set until PM approval. Only after approval does the property's `physicalAddress` get copied to the order.
@@ -788,6 +810,7 @@ Expected: Array of created orders (one per merchant in cart), cart cleared.
 ## Step 30 — Create Order Service — Query Methods
 
 ### What & Why
+
 Read methods for orders: get single order (with role-based field filtering), get my orders (role-aware), driver-specific queries, and order tracking.
 
 ### Code
@@ -799,10 +822,22 @@ const getOrder = async (userData: any, query: Record<string, any>) => {
   validateFields(query, ["orderId"]);
 
   const order = await Order.findOne({ _id: query.orderId })
-    .populate({ path: "userId", select: "name email phoneNumber profile_image" })
-    .populate({ path: "merchantId", select: "storeName storeAddress store_logo storePhoneNumber" })
-    .populate({ path: "driverId", select: "name phoneNumber profile_image vehicleType locationCoordinates" })
-    .populate({ path: "propertyId", select: "propertyName propertyType propertyCode city" })
+    .populate({
+      path: "userId",
+      select: "name email phoneNumber profile_image",
+    })
+    .populate({
+      path: "merchantId",
+      select: "storeName storeAddress store_logo storePhoneNumber",
+    })
+    .populate({
+      path: "driverId",
+      select: "name phoneNumber profile_image vehicleType locationCoordinates",
+    })
+    .populate({
+      path: "propertyId",
+      select: "propertyName propertyType propertyCode city",
+    })
     .lean();
 
   if (!order) {
@@ -810,10 +845,7 @@ const getOrder = async (userData: any, query: Record<string, any>) => {
   }
 
   // Hide delivery address for property-code orders still pending host approval
-  if (
-    order.status === "pending_host_approval" &&
-    userData.role === "USER"
-  ) {
+  if (order.status === "pending_host_approval" && userData.role === "USER") {
     delete (order as any).deliveryAddress;
     delete (order as any).deliveryCoordinates;
   }
@@ -881,8 +913,14 @@ const getActiveOrders = async (userData: any, query: QueryParams) => {
 
   const orderQuery = new QueryBuilder(
     Order.find(filter)
-      .populate({ path: "userId", select: "name phoneNumber profile_image address" })
-      .populate({ path: "merchantId", select: "storeName storeAddress store_logo storePhoneNumber" })
+      .populate({
+        path: "userId",
+        select: "name phoneNumber profile_image address",
+      })
+      .populate({
+        path: "merchantId",
+        select: "storeName storeAddress store_logo storePhoneNumber",
+      })
       .lean(),
     query,
   )
@@ -909,8 +947,13 @@ const getPendingDeliveryRequests = async (
 
   const orderQuery = new QueryBuilder(
     Order.find(filter)
-      .populate({ path: "merchantId", select: "storeName storeAddress store_logo" })
-      .select("orderId items merchantId total driverPayout deliveryAddress createdAt")
+      .populate({
+        path: "merchantId",
+        select: "storeName storeAddress store_logo",
+      })
+      .select(
+        "orderId items merchantId total driverPayout deliveryAddress createdAt",
+      )
       .lean(),
     query,
   )
@@ -933,7 +976,10 @@ const trackOrder = async (userData: any, query: Record<string, any>) => {
     _id: query.orderId,
     userId: userData.userId,
   })
-    .populate({ path: "merchantId", select: "storeName storeAddress storeLocationCoordinates" })
+    .populate({
+      path: "merchantId",
+      select: "storeName storeAddress storeLocationCoordinates",
+    })
     .populate({
       path: "driverId",
       select: "name phoneNumber profile_image vehicleType locationCoordinates",
@@ -967,12 +1013,15 @@ export { OrderService };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 After routes registered, test `GET /order/get-my-orders` as each role and confirm role-appropriate filtering.
 
 ### Common Mistakes
+
 - Not filtering `driverId: { $exists: false }` for pending delivery requests — this would show orders already assigned to other drivers.
 - Leaking driver location on `trackOrder` to non-order-owners — the `userId` filter ensures only the customer who placed the order can track it.
 
@@ -981,6 +1030,7 @@ After routes registered, test `GET /order/get-my-orders` as each role and confir
 ## Step 31 — Create Payment Interface
 
 ### What & Why
+
 TypeScript types for the Payment model that records Stripe payment intent details.
 
 ### Code
@@ -1008,12 +1058,15 @@ export interface IPayment extends Document {
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - None specific.
 
 ---
@@ -1021,6 +1074,7 @@ No TypeScript errors.
 ## Step 32 — Create Payment Model
 
 ### What & Why
+
 Mongoose schema for payment records. Indexes on `orderId`, `userId`, and `stripePaymentIntentId` for efficient lookups.
 
 ### Code
@@ -1094,12 +1148,15 @@ export = Payment;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 `payments` collection created on server start.
 
 ### Common Mistakes
+
 - None specific.
 
 ---
@@ -1107,6 +1164,7 @@ None required.
 ## Step 33 — Create Stripe Helper Service
 
 ### What & Why
+
 Wraps the Stripe SDK with typed methods for PaymentIntent operations. All amounts are in **cents** (Stripe requirement). This is a low-level service — the Payment service (Step 34) uses it.
 
 ### Code
@@ -1138,10 +1196,7 @@ const createPaymentIntent = async (
     });
     return paymentIntent;
   } catch (error: any) {
-    throw new ApiError(
-      status.BAD_REQUEST,
-      `Stripe error: ${error.message}`,
-    );
+    throw new ApiError(status.BAD_REQUEST, `Stripe error: ${error.message}`);
   }
 };
 
@@ -1149,9 +1204,7 @@ const capturePaymentIntent = async (
   paymentIntentId: string,
 ): Promise<Stripe.PaymentIntent> => {
   try {
-    const paymentIntent = await stripe.paymentIntents.capture(
-      paymentIntentId,
-    );
+    const paymentIntent = await stripe.paymentIntents.capture(paymentIntentId);
     return paymentIntent;
   } catch (error: any) {
     throw new ApiError(
@@ -1165,9 +1218,7 @@ const cancelPaymentIntent = async (
   paymentIntentId: string,
 ): Promise<Stripe.PaymentIntent> => {
   try {
-    const paymentIntent = await stripe.paymentIntents.cancel(
-      paymentIntentId,
-    );
+    const paymentIntent = await stripe.paymentIntents.cancel(paymentIntentId);
     return paymentIntent;
   } catch (error: any) {
     throw new ApiError(
@@ -1187,8 +1238,7 @@ const createRefund = async (
       payment_intent: paymentIntentId,
     };
     if (amount) refundData.amount = amount; // partial refund in cents
-    if (reason)
-      refundData.reason = reason as Stripe.RefundCreateParams.Reason;
+    if (reason) refundData.reason = reason as Stripe.RefundCreateParams.Reason;
 
     const refund = await stripe.refunds.create(refundData);
     return refund;
@@ -1335,17 +1385,22 @@ export { StripeService };
 ```
 
 ### Commands
+
 None required. Stripe SDK is already installed (`stripe@20.4.1` in package.json).
 
 ### Verification
+
 ```typescript
 // Quick test (temporarily in server.ts):
 import { StripeService } from "./app/module/payment/stripe.service";
-const pi = await StripeService.createPaymentIntent(1000, "usd", { test: "true" });
+const pi = await StripeService.createPaymentIntent(1000, "usd", {
+  test: "true",
+});
 console.log(pi.id); // pi_...
 ```
 
 ### Common Mistakes
+
 - Passing dollar amounts instead of cents — `$10.00` must be `1000`.
 - Not handling Stripe errors — every method wraps calls in try/catch to convert Stripe errors to `ApiError`.
 
@@ -1354,6 +1409,7 @@ console.log(pi.id); // pi_...
 ## Step 34 — Create Payment Service
 
 ### What & Why
+
 Business logic for creating payment intents, retrieving payments, and processing refunds. Determines capture method based on order type (manual for property-code orders, automatic for direct).
 
 ### Code
@@ -1370,10 +1426,7 @@ import User from "../user/User";
 import { StripeService } from "./stripe.service";
 import { logger } from "../../../util/logger";
 
-const createIntent = async (
-  userData: any,
-  payload: Record<string, any>,
-) => {
+const createIntent = async (userData: any, payload: Record<string, any>) => {
   validateFields(payload, ["orderId"]);
 
   const order = await Order.findById(payload.orderId);
@@ -1434,10 +1487,7 @@ const createIntent = async (
   };
 };
 
-const getPayment = async (
-  userData: any,
-  query: Record<string, any>,
-) => {
+const getPayment = async (userData: any, query: Record<string, any>) => {
   let payment;
 
   if (query.paymentId) {
@@ -1449,10 +1499,7 @@ const getPayment = async (
       .populate({ path: "orderId", select: "orderId status total" })
       .lean();
   } else {
-    throw new ApiError(
-      status.BAD_REQUEST,
-      "paymentId or orderId is required",
-    );
+    throw new ApiError(status.BAD_REQUEST, "paymentId or orderId is required");
   }
 
   if (!payment) {
@@ -1462,10 +1509,7 @@ const getPayment = async (
   return payment;
 };
 
-const refund = async (
-  userData: any,
-  payload: Record<string, any>,
-) => {
+const refund = async (userData: any, payload: Record<string, any>) => {
   validateFields(payload, ["paymentId"]);
 
   const payment = await Payment.findById(payload.paymentId);
@@ -1493,9 +1537,10 @@ const refund = async (
   payment.refundId = stripeRefund.id;
   payment.refundAmount = stripeRefund.amount / 100;
   payment.refundReason = payload.reason || "requested_by_admin";
-  payment.status = refundAmountCents && refundAmountCents < payment.amount
-    ? "partially_refunded"
-    : "refunded";
+  payment.status =
+    refundAmountCents && refundAmountCents < payment.amount
+      ? "partially_refunded"
+      : "refunded";
   await payment.save();
 
   return payment;
@@ -1617,9 +1662,7 @@ const processOrderPayouts = async (orderId: string) => {
 
   // Transfer to driver
   if (driver?.stripeConnectAccountId && driver.stripeConnectOnboarded) {
-    const driverAmountCents = Math.round(
-      (order.driverPayout || 0) * 100,
-    );
+    const driverAmountCents = Math.round((order.driverPayout || 0) * 100);
     if (driverAmountCents > 0) {
       try {
         await StripeService.createTransfer(
@@ -1653,12 +1696,15 @@ export { PaymentService };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 After routes registered, create a payment intent for an order and check you get a `clientSecret` back.
 
 ### Common Mistakes
+
 - Not multiplying by 100 for Stripe amounts — `order.total` is in dollars, Stripe wants cents.
 - Using `automatic` capture for property-code orders — these MUST use `manual` so the payment is only held (not charged) until PM approves.
 
@@ -1667,6 +1713,7 @@ After routes registered, create a payment intent for an order and check you get 
 ## Step 35 — Create Stripe Webhook Handler
 
 ### What & Why
+
 Handles Stripe webhook events to update Payment/Order records asynchronously. The webhook needs raw body parsing (not JSON) for signature verification.
 
 ### Code
@@ -1710,9 +1757,7 @@ const handleWebhook = async (req: Request, res: Response) => {
           paymentMethod: paymentIntent.payment_method_types?.[0] || "card",
         },
       );
-      logger.info(
-        `Payment succeeded: ${paymentIntent.id}`,
-      );
+      logger.info(`Payment succeeded: ${paymentIntent.id}`);
       break;
     }
 
@@ -1722,9 +1767,7 @@ const handleWebhook = async (req: Request, res: Response) => {
         { stripePaymentIntentId: paymentIntent.id },
         { status: "failed" },
       );
-      logger.warn(
-        `Payment failed: ${paymentIntent.id}`,
-      );
+      logger.warn(`Payment failed: ${paymentIntent.id}`);
       break;
     }
 
@@ -1756,12 +1799,15 @@ export { handleWebhook };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Set up a Stripe webhook in the Stripe Dashboard pointing to `https://yourdomain.com/payment/webhook` (or use `stripe listen --forward-to localhost:PORT/payment/webhook` for local testing). Confirm events are logged.
 
 ### Common Mistakes
+
 - Using `express.json()` on the webhook route — the signature verification REQUIRES the raw body. The webhook route must use `express.raw()`.
 
 ---
@@ -1769,6 +1815,7 @@ Set up a Stripe webhook in the Stripe Dashboard pointing to `https://yourdomain.
 ## Step 36 — Create Payment Controller
 
 ### What & Why
+
 Standard controller mapping for all Payment and Connect endpoints.
 
 ### Code
@@ -1816,31 +1863,27 @@ const refundPayment = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const createConnectAccount = catchAsync(
-  async (req: Request, res: Response) => {
-    if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
-    const result = await PaymentService.createConnectAccount(req.user);
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Connect account created",
-      data: result,
-    });
-  },
-);
+const createConnectAccount = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  const result = await PaymentService.createConnectAccount(req.user);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Connect account created",
+    data: result,
+  });
+});
 
-const getConnectStatus = catchAsync(
-  async (req: Request, res: Response) => {
-    if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
-    const result = await PaymentService.getConnectStatus(req.user);
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Connect status retrieved",
-      data: result,
-    });
-  },
-);
+const getConnectStatus = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  const result = await PaymentService.getConnectStatus(req.user);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Connect status retrieved",
+    data: result,
+  });
+});
 
 const PaymentController = {
   createIntent,
@@ -1854,12 +1897,15 @@ export { PaymentController };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - None specific.
 
 ---
@@ -1867,6 +1913,7 @@ No TypeScript errors.
 ## Step 37 — Create Payment Routes and Register Webhook
 
 ### What & Why
+
 Sets up payment routes. **Critical**: the webhook route needs raw body parsing, so it must be registered in `app.ts` BEFORE `express.json()`, or use a route-specific middleware.
 
 ### Code
@@ -1944,20 +1991,24 @@ import PaymentRoutes from "../module/payment/payment.routes";
 ```
 
 ### Commands
+
 ```bash
 npm run dev
 ```
 
 For local webhook testing:
+
 ```bash
 stripe listen --forward-to localhost:5000/payment/webhook
 ```
 
 ### Verification
+
 1. `POST /payment/create-intent` with a valid orderId returns `{ clientSecret, paymentIntentId }`
 2. Stripe webhook events are logged in the terminal
 
 ### Common Mistakes
+
 - Placing the webhook route AFTER `express.json()` — the JSON parser consumes the raw body, making signature verification fail. The raw route MUST come first.
 - Forgetting `express.raw({ type: "application/json" })` — without this, `req.body` is undefined in the webhook handler.
 
@@ -1966,6 +2017,7 @@ stripe listen --forward-to localhost:5000/payment/webhook
 ## Step 38 — Create Payout Interface
 
 ### What & Why
+
 Types for the Payout model that tracks merchant/driver withdrawal requests.
 
 ### Code
@@ -1992,12 +2044,15 @@ export interface IPayout extends Document {
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - None specific.
 
 ---
@@ -2005,6 +2060,7 @@ No TypeScript errors.
 ## Step 39 — Create Payout Model
 
 ### What & Why
+
 Mongoose schema for payout records.
 
 ### Code
@@ -2073,12 +2129,15 @@ export = Payout;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 `payouts` collection created on server start.
 
 ### Common Mistakes
+
 - None specific.
 
 ---
@@ -2092,6 +2151,7 @@ Steps 40 (Connect helpers) and 41 (Connect service methods) are already included
 ## Step 42 — Already Covered
 
 The `processOrderPayouts` function is already included in Step 34 (`payment.service.ts`). It handles:
+
 - Calculating merchant net earnings (subtotal - 15% commission)
 - Transferring to merchant's Connect account
 - Transferring driver payout to driver's Connect account
@@ -2103,6 +2163,7 @@ The `processOrderPayouts` function is already included in Step 34 (`payment.serv
 ## Step 43 — Create Withdrawal and Earnings Services
 
 ### What & Why
+
 Adds withdrawal request, payout history, and earnings aggregation methods to the Payment service.
 
 ### Code
@@ -2121,10 +2182,7 @@ const requestWithdrawal = async (
 
   const amount = Number(payload.amount);
   if (amount < 10) {
-    throw new ApiError(
-      status.BAD_REQUEST,
-      "Minimum withdrawal amount is $10",
-    );
+    throw new ApiError(status.BAD_REQUEST, "Minimum withdrawal amount is $10");
   }
 
   const user = await User.findById(userData.userId)
@@ -2139,7 +2197,10 @@ const requestWithdrawal = async (
   }
 
   // Calculate available balance
-  const totalEarnings = await calculateTotalEarnings(userData.userId, userData.role);
+  const totalEarnings = await calculateTotalEarnings(
+    userData.userId,
+    userData.role,
+  );
   const totalWithdrawn = await Payout.aggregate([
     {
       $match: {
@@ -2177,10 +2238,7 @@ const getMyPayouts = async (userData: any, query: QueryParams) => {
     delete query.status;
   }
 
-  const payoutQuery = new QueryBuilder(
-    Payout.find(filter).lean(),
-    query,
-  )
+  const payoutQuery = new QueryBuilder(Payout.find(filter).lean(), query)
     .filter()
     .sort()
     .paginate()
@@ -2215,10 +2273,7 @@ const calculateTotalEarnings = async (
   return result[0]?.total || 0;
 };
 
-const getMyEarnings = async (
-  userData: any,
-  query: Record<string, any>,
-) => {
+const getMyEarnings = async (userData: any, query: Record<string, any>) => {
   const period = query.period || "week";
   const field = userData.role === "MERCHANT" ? "merchantId" : "driverId";
   const earningsField =
@@ -2274,10 +2329,7 @@ const getMyEarnings = async (
   };
 };
 
-const getMyTransactions = async (
-  userData: any,
-  query: QueryParams,
-) => {
+const getMyTransactions = async (userData: any, query: QueryParams) => {
   const orderQuery = new QueryBuilder(
     Order.find({
       merchantId: userData.userId,
@@ -2322,12 +2374,15 @@ export { PaymentService };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 After routes added, test `GET /payment/my-earnings?period=week` as a merchant/driver.
 
 ### Common Mistakes
+
 - Not importing `Payout` and `QueryBuilder` — add these imports at the top of the file.
 - Using raw string in `$match` for ObjectId — must convert with `new mongoose.Types.ObjectId(userId)` for aggregation pipeline.
 
@@ -2336,6 +2391,7 @@ After routes added, test `GET /payment/my-earnings?period=week` as a merchant/dr
 ## Step 44 — Add Withdrawal Controller Methods
 
 ### What & Why
+
 Adds controller methods for the new payout/earnings endpoints.
 
 ### Code
@@ -2343,25 +2399,20 @@ Adds controller methods for the new payout/earnings endpoints.
 Add to `src/app/module/payment/payment.controller.ts`:
 
 ```typescript
-const requestWithdrawal = catchAsync(
-  async (req: Request, res: Response) => {
-    if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
-    const result = await PaymentService.requestWithdrawal(req.user, req.body);
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Withdrawal request submitted",
-      data: result,
-    });
-  },
-);
+const requestWithdrawal = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  const result = await PaymentService.requestWithdrawal(req.user, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Withdrawal request submitted",
+    data: result,
+  });
+});
 
 const getMyPayouts = catchAsync(async (req: Request, res: Response) => {
   if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
-  const result = await PaymentService.getMyPayouts(
-    req.user,
-    req.query as any,
-  );
+  const result = await PaymentService.getMyPayouts(req.user, req.query as any);
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -2382,22 +2433,20 @@ const getMyEarnings = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getMyTransactions = catchAsync(
-  async (req: Request, res: Response) => {
-    if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
-    const result = await PaymentService.getMyTransactions(
-      req.user,
-      req.query as any,
-    );
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Transactions retrieved",
-      data: result.transactions,
-      meta: result.meta,
-    });
-  },
-);
+const getMyTransactions = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  const result = await PaymentService.getMyTransactions(
+    req.user,
+    req.query as any,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Transactions retrieved",
+    data: result.transactions,
+    meta: result.meta,
+  });
+});
 ```
 
 Update the `PaymentController` export:
@@ -2417,12 +2466,15 @@ const PaymentController = {
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - None specific.
 
 ---
@@ -2430,6 +2482,7 @@ No TypeScript errors.
 ## Step 45 — Add Payout Routes and Verify
 
 ### What & Why
+
 Adds the remaining payment routes and verifies the full payment flow.
 
 ### Code
@@ -2498,17 +2551,20 @@ export = router;
 ```
 
 ### Commands
+
 ```bash
 npm run dev
 ```
 
 ### Verification
+
 1. `POST /payment/create-connect-account` as MERCHANT → returns `accountLink` URL
 2. `GET /payment/connect-status` → returns `{ onboarded: false/true }`
 3. `POST /payment/request-withdrawal` with `{ amount: 50 }` → creates payout with status `pending`
 4. `GET /payment/my-earnings?period=week` → returns earnings summary
 
 ### Common Mistakes
+
 - Using `auth_level.merchant` for Connect routes — both MERCHANT and DRIVER need Connect accounts. Use `auth_level.all` and validate role inside the service.
 - `my-transactions` IS merchant-only — this shows per-order breakdown with platform fee column.
 

@@ -10,11 +10,11 @@ This project is a backend RESTful API built on the **Node.js** runtime using the
 graph TD
     Client[Client / Frontend] -->|HTTP / REST| API[Express API Router]
     Client -->|WebSocket| Socket[Socket.io Server]
-    
+
     API --> Middleware[Global Middleware & Error Handler]
-    
+
     Middleware --> Modules
-    
+
     subgraph Modules [Domain Modules]
         Auth[Auth Module]
         User[User Module]
@@ -22,7 +22,7 @@ graph TD
         Admin[Admin Module]
         Others[Other Modules...]
     end
-    
+
     Modules --> DB[(MongoDB)]
     Socket --> DB
 ```
@@ -49,7 +49,7 @@ graph TD
 graph LR
     Root[Project Root] --> Src[src/]
     Root --> ConfigFiles[.env, package.json, tsconfig.json, eslint]
-    
+
     Src --> App[app/]
     Src --> ConfigDir[config/]
     Src --> Conn[connection/]
@@ -101,6 +101,7 @@ graph LR
 ├── eslint.config.mjs         # ESLint configuration
 └── package.json              # Includes dependency manifests and dev scripts (e.g., `make:file`)
 ```
+
 </details>
 
 ## 4. Core System Workflows
@@ -144,20 +145,20 @@ The repository employs centralized and graceful error handling strategies. Using
 flowchart TD
     Controller[Controller / Service] -->|Throws Error| CatchAsync[catchAsync wrapper]
     CatchAsync --> Global[globalErrorHandler middleware]
-    
+
     Global --> CheckType{Error Type?}
     CheckType -->|ValidationError| HandleVal[handleValidationError]
     CheckType -->|CastError| HandleCast[handleCastError]
     CheckType -->|MulterError| HandleMulter[handleMulterError]
     CheckType -->|ApiError| HandleApi[Extract Status & Message]
     CheckType -->|Other| Generic[Generic 500 Error]
-    
+
     HandleVal --> Format[Format into Standard JSON]
     HandleCast --> Format
     HandleMulter --> Format
     HandleApi --> Format
     Generic --> Format
-    
+
     Format --> Response[Send Consistent Response to Client]
 ```
 
