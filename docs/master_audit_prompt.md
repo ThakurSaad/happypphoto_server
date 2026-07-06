@@ -10,7 +10,7 @@ Conduct a **coverage-driven, regression-focused** audit of the entire server's A
 
 1. **Map** every registered route and its middleware chain.
 2. **Verify** functional integrity, security posture, and state consistency.
-3. **Prove** that changes documented in `@docs/guide/part3_host_merchant_driver.md` have not introduced regressions, side effects, or vulnerabilities.
+3. **Prove** that changes documented in `@docs/guide/part4_final_modules.md` have not introduced regressions, side effects, or vulnerabilities.
 
 > Scope realism note: "100% coverage" means every discovered route is exercised at least once at each applicable tier. It does **not** mean exhaustive fuzzing of every input combination — use equivalence-class partitioning and boundary-value analysis to keep the test matrix tractable.
 
