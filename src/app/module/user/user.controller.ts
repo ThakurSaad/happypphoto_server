@@ -104,6 +104,37 @@ const updateMerchantDocument = catchAsync(
   },
 );
 
+const updateStoreSettings = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await UserService.updateStoreSettings(req.user, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Store settings updated successfully",
+    data: result,
+  });
+});
+
+const submitDriverApplication = catchAsync(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+    }
+    const result = await UserService.submitDriverApplication(
+      req.user,
+      req.body,
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Application submitted",
+      data: result,
+    });
+  },
+);
+
 const UserController = {
   deleteMyAccount,
   getProfile,
@@ -113,6 +144,8 @@ const UserController = {
   updateMerchantStoreLocation,
   updateMerchantStoreProfile,
   updateMerchantDocument,
+  updateStoreSettings,
+  submitDriverApplication,
 };
 
 export { UserController };

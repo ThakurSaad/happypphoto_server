@@ -7,6 +7,11 @@ import generatePropertyCode from "../../../util/generatePropertyCode";
 import QueryBuilder, { QueryParams } from "../../../builder/queryBuilder";
 import type { Request } from "express";
 import unlinkFile from "../../../util/unlinkFile";
+import DeliveryRequest from "../order/DeliveryRequest";
+import Order from "../order/Order";
+import { StripeService } from "../payment/stripe.service";
+import Payment from "../payment/Payment";
+import postNotification from "../../../util/postNotification";
 
 const addProperty = async (req: Request) => {
   const { body: data, user: userData } = req;
@@ -248,18 +253,284 @@ const updateDeliveryRules = async (
   return updatedProperty;
 };
 
+const getPendingRequests = async (userData: any, query: QueryParams) => {
+  const requestQuery = new QueryBuilder(
+    DeliveryRequest.find({
+      hostId: userData.userId,
+      status: "pending",
+    })
+      .populate({
+        path: "orderId",
+        select: "orderId items subtotal total status createdAt",
+      })
+      .populate({
+        path: "customerId",
+        select: "name email phoneNumber profile_image",
+      })
+      .populate({
+        path: "propertyId",
+        select: "propertyName propertyCode",
+      })
+      .lean(),
+    query,
+  )
+    .sort()
+    .paginate()
+    .fields();
+
+  const [requests, meta] = await Promise.all([
+    requestQuery.modelQuery,
+    requestQuery.countTotal(),
+  ]);
+
+  return { meta, requests };
+};
+
+const getScheduledRequests = async (userData: any, query: QueryParams) => {
+  const requestQuery = new QueryBuilder(
+    DeliveryRequest.find({
+      hostId: userData.userId,
+      status: { $in: ["approved", "force_approved"] },
+    })
+      .populate({
+        path: "orderId",
+        select:
+          "orderId items subtotal total status deliveryWindow stayDates createdAt",
+      })
+      .populate({
+        path: "customerId",
+        select: "name email phoneNumber profile_image",
+      })
+      .populate({
+        path: "propertyId",
+        select: "propertyName propertyCode",
+      })
+      .lean(),
+    query,
+  )
+    .sort()
+    .paginate()
+    .fields();
+
+  const [requests, meta] = await Promise.all([
+    requestQuery.modelQuery,
+    requestQuery.countTotal(),
+  ]);
+
+  return { meta, requests };
+};
+
+const getDeliveredRequests = async (userData: any, query: QueryParams) => {
+  // Get approved requests where the associated order has status "delivered"
+  const requests = await DeliveryRequest.find({
+    hostId: userData.userId,
+    status: { $in: ["approved", "force_approved"] },
+  })
+    .populate({
+      path: "orderId",
+      match: { status: "delivered" },
+      select:
+        "orderId items subtotal total status actualDeliveryTime proofOfDelivery",
+    })
+    .populate({
+      path: "customerId",
+      select: "name email profile_image",
+    })
+    .populate({
+      path: "propertyId",
+      select: "propertyName propertyCode",
+    })
+    .lean();
+
+  // Filter out requests where orderId populate returned null (order not delivered)
+  const deliveredRequests = requests.filter((r: any) => r.orderId !== null);
+
+  return { requests: deliveredRequests };
+};
+
+const approveRequest = async (userData: any, payload: Record<string, any>) => {
+  validateFields(payload, [
+    "requestId",
+    "deliveryWindowStart",
+    "deliveryWindowEnd",
+    "guestStayCheckIn",
+    "guestStayCheckOut",
+  ]);
+
+  const request = await DeliveryRequest.findById(payload.requestId);
+  if (!request) {
+    throw new ApiError(status.NOT_FOUND, "Delivery request not found");
+  }
+
+  if (request.hostId.toString() !== userData.userId) {
+    throw new ApiError(
+      status.FORBIDDEN,
+      "You are not authorized to approve this request",
+    );
+  }
+
+  if (request.status !== "pending") {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      "This request has already been reviewed",
+    );
+  }
+
+  // Validate delivery window is within guest stay
+  const windowStart = new Date(payload.deliveryWindowStart);
+  const windowEnd = new Date(payload.deliveryWindowEnd);
+  const checkIn = new Date(payload.guestStayCheckIn);
+  const checkOut = new Date(payload.guestStayCheckOut);
+
+  if (windowStart < checkIn || windowEnd > checkOut) {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      "Delivery window must be within guest stay dates",
+    );
+  }
+
+  // Update DeliveryRequest
+  request.status = "approved";
+  request.deliveryWindow = { start: windowStart, end: windowEnd };
+  request.guestStayDates = { checkIn, checkOut };
+  request.reviewedAt = new Date();
+  await request.save();
+
+  // Get the property address to reveal
+  const property = await Property.findById(request.propertyId).lean();
+
+  // Update Order
+  const order = await Order.findById(request.orderId);
+  if (order) {
+    order.status = "approved";
+    order.deliveryWindow = { start: windowStart, end: windowEnd };
+    order.stayDates = { checkIn, checkOut };
+    order.approvedAt = new Date();
+    // NOW reveal the physical address
+    if (property) {
+      order.deliveryAddress = property.physicalAddress;
+      if (property.locationCoordinates?.coordinates) {
+        order.deliveryCoordinates = property.locationCoordinates as any;
+      }
+    }
+    await order.save();
+
+    // Capture the held payment
+    const payment = await Payment.findOne({ orderId: order._id });
+    if (payment?.stripePaymentIntentId) {
+      try {
+        await StripeService.capturePaymentIntent(payment.stripePaymentIntentId);
+        payment.status = "succeeded";
+        await payment.save();
+      } catch (error: any) {
+        // Log but don't fail the approval
+        const { logger } = require("../../../util/logger");
+        logger.error(
+          `Failed to capture payment for order ${order.orderId}: ${error.message}`,
+        );
+      }
+    }
+
+    // Notify customer and merchant
+    await postNotification(
+      "Delivery Approved",
+      `Your delivery to ${property?.propertyName || "property"} has been approved for order ${order.orderId}`,
+      order.userId,
+    );
+    await postNotification(
+      "New Approved Order",
+      `Order ${order.orderId} has been approved and is ready for your action`,
+      order.merchantId,
+    );
+  }
+
+  return request;
+};
+
+const rejectRequest = async (userData: any, payload: Record<string, any>) => {
+  validateFields(payload, ["requestId"]);
+
+  const request = await DeliveryRequest.findById(payload.requestId);
+  if (!request) {
+    throw new ApiError(status.NOT_FOUND, "Delivery request not found");
+  }
+
+  if (request.hostId.toString() !== userData.userId) {
+    throw new ApiError(
+      status.FORBIDDEN,
+      "You are not authorized to reject this request",
+    );
+  }
+
+  if (request.status !== "pending") {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      "This request has already been reviewed",
+    );
+  }
+
+  // Update DeliveryRequest
+  request.status = "rejected";
+  request.reviewedAt = new Date();
+  await request.save();
+
+  // Cancel Order
+  const order = await Order.findById(request.orderId);
+  if (order) {
+    order.status = "cancelled";
+    order.cancelledBy = "PROPERTY_HOST";
+    order.cancelReason = payload.reason || "Rejected by property host";
+    await order.save();
+
+    // Cancel the held payment
+    const payment = await Payment.findOne({ orderId: order._id });
+    if (payment?.stripePaymentIntentId && payment.status === "unpaid") {
+      try {
+        await StripeService.cancelPaymentIntent(payment.stripePaymentIntentId);
+      } catch (error: any) {
+        const { logger } = require("../../../util/logger");
+        logger.error(
+          `Failed to cancel payment for order ${order.orderId}: ${error.message}`,
+        );
+      }
+    }
+
+    // Notify customer
+    await postNotification(
+      "Delivery Request Rejected",
+      `Your delivery request for order ${order.orderId} was rejected. Reason: ${payload.reason || "No reason provided"}`,
+      order.userId,
+    );
+  }
+
+  return request;
+};
 const getDashboardStats = async (userData: any) => {
   const propertiesCount = await Property.countDocuments({
     hostId: userData.userId,
   });
 
-  // These will be populated after DeliveryRequest model exists
-  // For now, return zeros — updated in Step 46
+  const pendingCount = await DeliveryRequest.countDocuments({
+    hostId: userData.userId,
+    status: "pending",
+  });
+
+  const upcomingCount = await DeliveryRequest.countDocuments({
+    hostId: userData.userId,
+    status: { $in: ["approved", "force_approved"] },
+  });
+
+  // Count delivered orders for this host
+  const deliveredOrders = await Order.countDocuments({
+    propertyHostId: userData.userId,
+    status: "delivered",
+  });
+
   return {
     propertiesCount,
-    pendingCount: 0,
-    upcomingCount: 0,
-    approvedCount: 0,
+    pendingCount,
+    upcomingCount,
+    deliveredCount: deliveredOrders,
   };
 };
 
@@ -272,6 +543,11 @@ const PropertyService = {
   resolveCode,
   updateDeliveryRules,
   getDashboardStats,
+  getPendingRequests,
+  getScheduledRequests,
+  getDeliveredRequests,
+  approveRequest,
+  rejectRequest,
 };
 
 export { PropertyService };
