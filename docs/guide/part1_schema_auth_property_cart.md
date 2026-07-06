@@ -7,6 +7,7 @@
 ## Step 1 — Add Missing Fields to User Interface
 
 ### What & Why
+
 The `IUser` interface is missing fields needed by multiple upcoming features: driver vehicle info, application status, Stripe Connect IDs, merchant store settings, rating aggregation, and property-host business details. This must come first because every new module (Order, Property, Payment, Payout) references User fields.
 
 ### Code
@@ -99,12 +100,15 @@ export interface IUser extends Document {
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Run `npx tsc --noEmit` — no errors on `user.interface.ts`.
 
 ### Common Mistakes
+
 - Forgetting to export `IBusinessHours` — other modules may need it.
 - Using `number` for `storeDeliveryRadius`/`storeMinimumOrder` — correct, these are stored as plain numbers (miles / dollars).
 
@@ -113,6 +117,7 @@ Run `npx tsc --noEmit` — no errors on `user.interface.ts`.
 ## Step 2 — Add Missing Fields to User Model
 
 ### What & Why
+
 The Mongoose schema must match the updated interface. Adds all new fields with appropriate types, defaults, and enum validations. Adds 2dsphere indexes for geo-queries.
 
 ### Code
@@ -124,7 +129,11 @@ Replace the entire file with:
 ```typescript
 import { Schema, model } from "mongoose";
 import type { IUser } from "./user.interface";
-import { EnumUserRole, EnumVehicleType, EnumApplicationStatus } from "../../../util/enum";
+import {
+  EnumUserRole,
+  EnumVehicleType,
+  EnumApplicationStatus,
+} from "../../../util/enum";
 
 const UserSchema = new Schema<IUser>(
   {
@@ -337,12 +346,15 @@ export = User;
 ```
 
 ### Commands
+
 None — indexes are created automatically when Mongoose syncs.
 
 ### Verification
+
 Start the server (`npm run dev`). Check MongoDB Compass — the `users` collection should show the new indexes (including `locationCoordinates_2dsphere` and `storeLocationCoordinates_2dsphere`).
 
 ### Common Mistakes
+
 - Missing the `EnumVehicleType` and `EnumApplicationStatus` imports — these are created in Step 6. If you get import errors, do Step 6 first or add temporary placeholder enums.
 - Not adding `index()` calls — without explicit `UserSchema.index()`, Mongoose may not create compound/2dsphere indexes reliably.
 
@@ -351,6 +363,7 @@ Start the server (`npm run dev`). Check MongoDB Compass — the `users` collecti
 ## Step 3 — Add Missing Fields to Review Model
 
 ### What & Why
+
 Reviews need to be tied to specific orders and merchants/drivers so we can calculate per-entity average ratings and prevent duplicate reviews per order. This comes early because the Review model is referenced by the rating aggregation logic later.
 
 ### Code
@@ -425,12 +438,15 @@ export default Review;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 `npx tsc --noEmit` passes. The `EnumReviewType` import resolves after Step 6.
 
 ### Common Mistakes
+
 - Making `driverId` required — it's optional because not all orders have a driver at review time (edge case: admin cancellation scenarios).
 - Forgetting the `orderId` index — needed for the "one review per order" uniqueness check in the postReview service.
 
@@ -439,6 +455,7 @@ None required.
 ## Step 4 — Add Missing Fields to Product Model
 
 ### What & Why
+
 Products need availability status tracking for the merchant inventory management feature. The `isAvailable` boolean and `status` enum let merchants toggle products and track stock status.
 
 ### Code
@@ -526,12 +543,15 @@ export const Product = model<FoodProduct>("Product", productSchema);
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Existing product CRUD still works — create a product via `POST /product/post-product` and confirm `isAvailable: true` and `status: "active"` appear in the response.
 
 ### Common Mistakes
+
 - Breaking the existing named export pattern — `Product` uses `export const Product` (different from other modules). Keep it consistent.
 - Forgetting `default: true` on `isAvailable` — existing products should remain available.
 
@@ -540,6 +560,7 @@ Existing product CRUD still works — create a product via `POST /product/post-p
 ## Step 5 — Add Upload Fields for Property Image and Proof of Delivery
 
 ### What & Why
+
 The `fileUploader` middleware only accepts a whitelist of field names. We need `property_image` (Property Host uploads property photos) and `proof_of_delivery` (Driver uploads delivery proof).
 
 ### Code
@@ -595,12 +616,15 @@ Replace with:
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Server starts without errors. Uploading a file with `fieldname: "property_image"` via multipart form no longer throws "Invalid fieldname".
 
 ### Common Mistakes
+
 - Adding to `allowedFieldNames` but forgetting the `.fields()` config — both arrays must be updated.
 - Misspelling the field name — must match exactly what the client sends in multipart form-data.
 
@@ -609,6 +633,7 @@ Server starts without errors. Uploading a file with `fieldname: "property_image"
 ## Step 6 — Add New Enums
 
 ### What & Why
+
 Multiple new models need enum constants for status fields, vehicle types, property types, etc. Adding them all now prevents import errors when building subsequent models.
 
 ### Code
@@ -744,12 +769,15 @@ export {
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 `npx tsc --noEmit` — no errors. All previous steps' imports now resolve.
 
 ### Common Mistakes
+
 - Using uppercase enum values in the objects (like `"PENDING"`) — the values must be **lowercase** to match what gets stored in MongoDB and returned in API responses. The keys are uppercase (for code readability), values are lowercase.
 - Forgetting to add to the `export` block — every new enum must be listed.
 
@@ -758,6 +786,7 @@ None required.
 ## Step 7 — Add Stripe Webhook Secret to Config
 
 ### What & Why
+
 The Stripe webhook handler (Step 35) needs `STRIPE_WEBHOOK_SECRET` to verify webhook signatures. Adding it to config now prevents forgetting it later.
 
 ### Code
@@ -786,15 +815,19 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 ```
 
 ### Commands
+
 Add to your `.env` file:
+
 ```bash
 STRIPE_WEBHOOK_SECRET=whsec_... # Get from Stripe Dashboard > Developers > Webhooks
 ```
 
 ### Verification
+
 `console.log(config.stripe.stripe_webhook_secret)` in server.ts (temporarily) outputs the value from `.env`.
 
 ### Common Mistakes
+
 - Forgetting to add to `.env` (not just `.env.example`) — the server will crash when the webhook handler tries to use `undefined`.
 
 ---
@@ -802,6 +835,7 @@ STRIPE_WEBHOOK_SECRET=whsec_... # Get from Stripe Dashboard > Developers > Webho
 ## Step 8 — Fix changePassword Bug
 
 ### What & Why
+
 The `changePassword` function in `auth.service.ts` stores the new password as **plaintext** because `Auth.updateOne()` bypasses Mongoose's `pre('save')` hook that hashes passwords. The `resetPassword` function correctly uses `hashPass()` — we replicate that pattern here.
 
 ### Code
@@ -809,6 +843,7 @@ The `changePassword` function in `auth.service.ts` stores the new password as **
 Modify file: `src/app/module/auth/auth.service.ts`
 
 Find line 363:
+
 ```
 Target:
   await Auth.updateOne({ email }, { password: newPassword });
@@ -819,15 +854,18 @@ Replace with:
 ```
 
 ### Commands
+
 None required. Server auto-restarts with `ts-node-dev`.
 
 ### Verification
+
 1. Login with a known password
 2. Call `PATCH /auth/change-password` with `{ oldPassword, newPassword: "Test1234!", confirmPassword: "Test1234!" }`
 3. Logout and login with `"Test1234!"` — should succeed
 4. Check MongoDB: the `auths` collection password field should be a bcrypt hash (starts with `$2b$`), NOT plaintext
 
 ### Common Mistakes
+
 - Hashing but forgetting to use `await` — `hashPass` is async (uses `bcrypt.hash`). Without `await`, you'd store a Promise object.
 - The `hashPass` function is already defined at line 407 in the same file — don't redeclare it.
 
@@ -836,6 +874,7 @@ None required. Server auto-restarts with `ts-node-dev`.
 ## Step 9 — Fix changePassword Route Auth Level
 
 ### What & Why
+
 The route uses `auth(config.auth_level.user)` which only allows `["USER", "ADMIN"]`. But PROPERTY_HOST, DRIVER, and MERCHANT also need to change their passwords. Change to `auth_level.all`.
 
 ### Code
@@ -843,6 +882,7 @@ The route uses `auth(config.auth_level.user)` which only allows `["USER", "ADMIN
 Modify file: `src/app/module/auth/auth.routes.ts`
 
 Find:
+
 ```
 Target:
     auth(config.auth_level.user),
@@ -852,12 +892,15 @@ Replace with:
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Login as a MERCHANT user and call `PATCH /auth/change-password` — should return 200 instead of 403 Forbidden.
 
 ### Common Mistakes
+
 - None — this is a one-line fix.
 
 ---
@@ -865,6 +908,7 @@ Login as a MERCHANT user and call `PATCH /auth/change-password` — should retur
 ## Step 10 — Create Property Interface
 
 ### What & Why
+
 Defines the TypeScript types for the Property model. Comes before the model because `Property.ts` imports this interface. Includes the `IDeliveryRules` sub-interface for the persistent delivery rules feature.
 
 ### Code
@@ -911,12 +955,15 @@ export interface IProperty extends Document {
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 File exists at `src/app/module/property/property.interface.ts` — no TypeScript errors.
 
 ### Common Mistakes
+
 - Making `state` required — it's optional per the plan (some countries don't have states).
 
 ---
@@ -924,6 +971,7 @@ File exists at `src/app/module/property/property.interface.ts` — no TypeScript
 ## Step 11 — Create Property Model
 
 ### What & Why
+
 The Mongoose schema for properties. Includes indexes for efficient lookups: unique `propertyCode`, host lookup, geo-queries, and active filter.
 
 ### Code
@@ -1027,12 +1075,15 @@ export = Property;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Start server — `properties` collection appears in MongoDB with indexes visible in Compass.
 
 ### Common Mistakes
+
 - Forgetting `unique: true` on `propertyCode` — codes MUST be globally unique.
 - The `2dsphere` index on `locationCoordinates` requires the GeoJSON format (`type: "Point"`, `coordinates: [lng, lat]`). Latitude comes SECOND.
 
@@ -1041,6 +1092,7 @@ Start server — `properties` collection appears in MongoDB with indexes visible
 ## Step 12 — Create Property Code Generator Utility
 
 ### What & Why
+
 Generates unique property codes in the format `ABC1234` (3 uppercase letters + 4 digits). Checks the database to ensure uniqueness before returning. This is a standalone utility because it's used by the Property service.
 
 ### Code
@@ -1078,10 +1130,13 @@ export = generatePropertyCode;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 You can test in isolation:
+
 ```typescript
 // Temporary test in server.ts after DB connects:
 import generatePropertyCode from "./util/generatePropertyCode";
@@ -1090,6 +1145,7 @@ console.log(code); // e.g., "PHX2847"
 ```
 
 ### Common Mistakes
+
 - Using `Math.random() * 10000` without the `1000 +` offset — this could produce 3-digit numbers like `042`. The `1000 + Math.random() * 9000` formula guarantees 4-digit numbers (1000–9999).
 - Not awaiting the function — it's async because of the DB uniqueness check.
 
@@ -1098,6 +1154,7 @@ console.log(code); // e.g., "PHX2847"
 ## Step 13 — Create Property Service
 
 ### What & Why
+
 All business logic for property CRUD and code resolution. This is the largest service in Domain 2 — handles adding properties, resolving codes (the public endpoint that reveals NO address), updating delivery rules, and dashboard stats.
 
 ### Code
@@ -1183,10 +1240,7 @@ const getProperties = async (userData: any, query: QueryParams) => {
   return { meta, properties };
 };
 
-const getProperty = async (
-  userData: any,
-  query: { propertyId?: string },
-) => {
+const getProperty = async (userData: any, query: { propertyId?: string }) => {
   validateFields(query, ["propertyId"]);
 
   const property = await Property.findById(query.propertyId).lean();
@@ -1294,10 +1348,7 @@ const resolveCode = async (query: { propertyCode?: string }) => {
   }).lean();
 
   if (!property) {
-    throw new ApiError(
-      status.NOT_FOUND,
-      "Property not found or inactive",
-    );
+    throw new ApiError(status.NOT_FOUND, "Property not found or inactive");
   }
 
   // Get host info for display
@@ -1391,10 +1442,13 @@ export { PropertyService };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 After Step 16, test:
+
 ```
 POST /property/add-property
 Authorization: Bearer <property_host_token>
@@ -1408,9 +1462,11 @@ state: AZ
 postalCode: 85001
 country: US
 ```
+
 Expected: 200 with `propertyCode` like `"PHX2847"`.
 
 ### Common Mistakes
+
 - Leaking `physicalAddress` in `resolveCode` — this endpoint is PUBLIC and must NEVER return the address. Only `propertyName`, `propertyType`, `hostCompany`, `city`, `state`.
 - Not parsing lat/long as floats — query params come as strings.
 
@@ -1419,6 +1475,7 @@ Expected: 200 with `propertyCode` like `"PHX2847"`.
 ## Step 14 — Create Property Controller
 
 ### What & Why
+
 Connects Property routes to the Property service. Follows the existing `catchAsync` + `sendResponse` pattern.
 
 ### Code
@@ -1512,38 +1569,31 @@ const resolveCode = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateDeliveryRules = catchAsync(
-  async (req: Request, res: Response) => {
-    if (!req.user) {
-      throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
-    }
-    const result = await PropertyService.updateDeliveryRules(
-      req.user,
-      req.body,
-    );
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Delivery rules updated successfully",
-      data: result,
-    });
-  },
-);
+const updateDeliveryRules = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await PropertyService.updateDeliveryRules(req.user, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Delivery rules updated successfully",
+    data: result,
+  });
+});
 
-const getDashboardStats = catchAsync(
-  async (req: Request, res: Response) => {
-    if (!req.user) {
-      throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
-    }
-    const result = await PropertyService.getDashboardStats(req.user);
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Dashboard stats retrieved",
-      data: result,
-    });
-  },
-);
+const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await PropertyService.getDashboardStats(req.user);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Dashboard stats retrieved",
+    data: result,
+  });
+});
 
 const PropertyController = {
   addProperty,
@@ -1560,12 +1610,15 @@ export { PropertyController };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - `resolveCode` should NOT check `req.user` — it's a public endpoint (any authenticated user can resolve a code during checkout).
 
 ---
@@ -1573,6 +1626,7 @@ No TypeScript errors.
 ## Step 15 — Create Property Routes
 
 ### What & Why
+
 Maps HTTP endpoints to property controller methods with appropriate auth levels.
 
 ### Code
@@ -1636,12 +1690,15 @@ export = router;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Routes file compiles without errors.
 
 ### Common Mistakes
+
 - Using `auth(config.auth_level.all)` for property mutation routes — only the host should modify properties. Use `property_host`.
 - Forgetting `uploadFile()` on `add-property` and `update-property` — these accept `property_image`.
 
@@ -1650,6 +1707,7 @@ Routes file compiles without errors.
 ## Step 16 — Register Property Routes
 
 ### What & Why
+
 Adds the property module to the main router so endpoints are accessible at `/property/*`.
 
 ### Code
@@ -1690,12 +1748,15 @@ Replace with:
 ```
 
 ### Commands
+
 None required. Server auto-restarts.
 
 ### Verification
+
 `GET /property/resolve-code?propertyCode=TEST` should return 404 "Property not found or inactive" (not 404 "route not found").
 
 ### Common Mistakes
+
 - Importing with `import PropertyRoutes from ...` but the file exports with `export = router` — this works with TypeScript `esModuleInterop: true` (already set in `tsconfig.json`).
 
 ---
@@ -1703,13 +1764,17 @@ None required. Server auto-restarts.
 ## Step 17 — Verify Property Module End-to-End
 
 ### What & Why
+
 Confirms the entire Property module works before building dependent features (Cart property code, Order property flow).
 
 ### Code
+
 No new code.
 
 ### Commands
+
 Start the server:
+
 ```bash
 npm run dev
 ```
@@ -1717,6 +1782,7 @@ npm run dev
 ### Verification
 
 **Test 1 — Add Property:**
+
 ```
 POST /property/add-property
 Authorization: Bearer <property_host_token>
@@ -1730,7 +1796,9 @@ state=AZ
 postalCode=85001
 country=US
 ```
+
 Expected response:
+
 ```json
 {
   "statusCode": 200,
@@ -1748,19 +1816,24 @@ Expected response:
 ```
 
 **Test 2 — Resolve Code (as USER):**
+
 ```
 GET /property/resolve-code?propertyCode=XYZ1234
 Authorization: Bearer <user_token>
 ```
+
 Expected: Returns `propertyName`, `propertyType`, `hostCompany`, `city`, `state` — **NO `physicalAddress` or `locationCoordinates`**.
 
 **Test 3 — Invalid Code:**
+
 ```
 GET /property/resolve-code?propertyCode=INVALID
 ```
+
 Expected: `404 "Property not found or inactive"`
 
 ### Common Mistakes
+
 - Testing without first registering and activating a PROPERTY_HOST account — you need a valid host JWT.
 
 ---
@@ -1768,6 +1841,7 @@ Expected: `404 "Property not found or inactive"`
 ## Step 18 — Create Cart Interface
 
 ### What & Why
+
 Defines types for the Cart model. One cart per user (singleton), containing items from potentially multiple merchants.
 
 ### Code
@@ -1794,12 +1868,15 @@ export interface ICart extends Document {
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - Forgetting `merchantId` on `ICartItem` — needed for grouping items by merchant during checkout (Step 29).
 
 ---
@@ -1807,6 +1884,7 @@ No TypeScript errors.
 ## Step 19 — Create Cart Model
 
 ### What & Why
+
 The Mongoose schema for carts. Uses a unique index on `userId` to enforce one cart per user.
 
 ### Code
@@ -1871,12 +1949,15 @@ export = Cart;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 Start server — `carts` collection appears in MongoDB.
 
 ### Common Mistakes
+
 - Setting `_id: true` on `CartItemSchema` — subdocuments get `_id` by default which creates unnecessary overhead. Use `_id: false` since we identify items by `productId`.
 - Forgetting `min: 1` on `quantity` — prevents zero-quantity items in the cart.
 
@@ -1885,6 +1966,7 @@ Start server — `carts` collection appears in MongoDB.
 ## Step 20 — Create Cart Service
 
 ### What & Why
+
 All cart business logic: CRUD operations, property code linkage, and product validation.
 
 ### Code
@@ -1919,10 +2001,7 @@ const getCart = async (userData: any) => {
   return cart;
 };
 
-const addItem = async (
-  userData: any,
-  payload: Record<string, any>,
-) => {
+const addItem = async (userData: any, payload: Record<string, any>) => {
   validateFields(payload, ["productId", "quantity"]);
 
   const product = await Product.findById(payload.productId).lean();
@@ -1968,10 +2047,7 @@ const addItem = async (
   return cart;
 };
 
-const updateItem = async (
-  userData: any,
-  payload: Record<string, any>,
-) => {
+const updateItem = async (userData: any, payload: Record<string, any>) => {
   validateFields(payload, ["productId", "quantity"]);
 
   const cart = await Cart.findOne({ userId: userData.userId });
@@ -1999,10 +2075,7 @@ const updateItem = async (
   return cart;
 };
 
-const removeItem = async (
-  userData: any,
-  payload: Record<string, any>,
-) => {
+const removeItem = async (userData: any, payload: Record<string, any>) => {
   validateFields(payload, ["productId"]);
 
   const cart = await Cart.findOne({ userId: userData.userId });
@@ -2030,10 +2103,7 @@ const clearCart = async (userData: any) => {
   return cart;
 };
 
-const setPropertyCode = async (
-  userData: any,
-  payload: Record<string, any>,
-) => {
+const setPropertyCode = async (userData: any, payload: Record<string, any>) => {
   validateFields(payload, ["propertyCode"]);
 
   // Validate property code exists and is active
@@ -2043,10 +2113,7 @@ const setPropertyCode = async (
   }).lean();
 
   if (!property) {
-    throw new ApiError(
-      status.NOT_FOUND,
-      "Property not found or inactive",
-    );
+    throw new ApiError(status.NOT_FOUND, "Property not found or inactive");
   }
 
   let cart = await Cart.findOne({ userId: userData.userId });
@@ -2075,10 +2142,13 @@ export { CartService };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 After Step 23, test adding an item:
+
 ```
 POST /cart/add-item
 Authorization: Bearer <user_token>
@@ -2088,6 +2158,7 @@ Content-Type: application/json
 ```
 
 ### Common Mistakes
+
 - Not converting `quantity` to Number — `req.body` may deliver it as a string.
 - Forgetting to validate stock before adding — if a product has quantity 3 and user adds 5, we should reject.
 - Not populating product/merchant details in `getCart` — the client needs product names, images, and store names for display.
@@ -2097,6 +2168,7 @@ Content-Type: application/json
 ## Step 21 — Create Cart Controller
 
 ### What & Why
+
 Standard controller connecting routes to Cart service methods.
 
 ### Code
@@ -2176,20 +2248,18 @@ const clearCart = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const setPropertyCode = catchAsync(
-  async (req: Request, res: Response) => {
-    if (!req.user) {
-      throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
-    }
-    const result = await CartService.setPropertyCode(req.user, req.body);
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Property code set on cart",
-      data: result,
-    });
-  },
-);
+const setPropertyCode = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await CartService.setPropertyCode(req.user, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Property code set on cart",
+    data: result,
+  });
+});
 
 const CartController = {
   getCart,
@@ -2204,12 +2274,15 @@ export { CartController };
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - None specific to this step.
 
 ---
@@ -2217,6 +2290,7 @@ No TypeScript errors.
 ## Step 22 — Create Cart Routes
 
 ### What & Why
+
 Maps HTTP methods to Cart controller. All cart operations require USER role.
 
 ### Code
@@ -2232,16 +2306,8 @@ import config from "../../../config";
 const router = express.Router();
 
 router
-  .get(
-    "/get-cart",
-    auth(config.auth_level.user),
-    CartController.getCart,
-  )
-  .post(
-    "/add-item",
-    auth(config.auth_level.user),
-    CartController.addItem,
-  )
+  .get("/get-cart", auth(config.auth_level.user), CartController.getCart)
+  .post("/add-item", auth(config.auth_level.user), CartController.addItem)
   .patch(
     "/update-item",
     auth(config.auth_level.user),
@@ -2252,11 +2318,7 @@ router
     auth(config.auth_level.user),
     CartController.removeItem,
   )
-  .delete(
-    "/clear-cart",
-    auth(config.auth_level.user),
-    CartController.clearCart,
-  )
+  .delete("/clear-cart", auth(config.auth_level.user), CartController.clearCart)
   .patch(
     "/set-property-code",
     auth(config.auth_level.user),
@@ -2267,12 +2329,15 @@ export = router;
 ```
 
 ### Commands
+
 None required.
 
 ### Verification
+
 No TypeScript errors.
 
 ### Common Mistakes
+
 - Using `auth_level.all` instead of `auth_level.user` — only USERs (customers) have carts.
 
 ---
@@ -2280,6 +2345,7 @@ No TypeScript errors.
 ## Step 23 — Register Cart Routes and Verify
 
 ### What & Why
+
 Connects the cart module to the main router and tests end-to-end.
 
 ### Code
@@ -2287,6 +2353,7 @@ Connects the cart module to the main router and tests end-to-end.
 Modify file: `src/app/routes/index.ts`
 
 Add the import:
+
 ```
 Target:
 import PropertyRoutes from "../module/property/property.routes";
@@ -2297,6 +2364,7 @@ import CartRoutes from "../module/cart/cart.routes";
 ```
 
 Add to the `moduleRoutes` array:
+
 ```
 Target:
   {
@@ -2318,6 +2386,7 @@ Replace with:
 ```
 
 ### Commands
+
 ```bash
 npm run dev
 ```
@@ -2325,13 +2394,16 @@ npm run dev
 ### Verification
 
 **Test 1 — Get empty cart:**
+
 ```
 GET /cart/get-cart
 Authorization: Bearer <user_token>
 ```
+
 Expected: 200 with empty `items: []`
 
 **Test 2 — Add item:**
+
 ```
 POST /cart/add-item
 Authorization: Bearer <user_token>
@@ -2339,9 +2411,11 @@ Content-Type: application/json
 
 { "productId": "<valid_id>", "quantity": 2 }
 ```
+
 Expected: 200 with the product added to `items` array
 
 **Test 3 — Set property code:**
+
 ```
 PATCH /cart/set-property-code
 Authorization: Bearer <user_token>
@@ -2349,16 +2423,20 @@ Content-Type: application/json
 
 { "propertyCode": "XYZ1234" }
 ```
+
 Expected: 200 with `propertyCode` set on the cart
 
 **Test 4 — Clear cart:**
+
 ```
 DELETE /cart/clear-cart
 Authorization: Bearer <user_token>
 ```
+
 Expected: 200 with empty items and no propertyCode
 
 ### Common Mistakes
+
 - Testing with a MERCHANT or DRIVER token — carts use `auth_level.user` which only allows USER and ADMIN.
 - Forgetting to create a product first (via `POST /product/post-product` as a MERCHANT) before testing cart operations.
 
