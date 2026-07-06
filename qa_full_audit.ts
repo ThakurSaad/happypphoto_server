@@ -53,8 +53,8 @@ function extractRoutes(appInst: any) {
         const methodRegex = /\.(get|post|patch|delete|put)\(\s*["']([^"']+)["']/g;
         let m;
         while ((m = methodRegex.exec(routeContent)) !== null) {
-          let method = m[1].toUpperCase();
-          let endpoint = m[2];
+          const method = m[1].toUpperCase();
+          const endpoint = m[2];
           let fullPath = (mod.path + endpoint).replace(/\/+/g, '/');
           if (fullPath.endsWith('/')) fullPath = fullPath.slice(0, -1);
           routes.push({ method, path: fullPath });
@@ -95,7 +95,7 @@ async function runTests() {
 
       try {
         let fetchPath = route.path;
-        fetchPath = fetchPath.replace(/:[^\/]+/g, '123456789012345678901234');
+        fetchPath = fetchPath.replace(/:[^/]+/g, '123456789012345678901234');
         
         const res = await fetch(`${API_URL}${fetchPath}`, {
            method: route.method,
