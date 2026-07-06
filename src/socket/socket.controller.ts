@@ -68,9 +68,9 @@ const updateLocation = socketCatchAsync(
     io: Server,
     payload: Record<string, unknown>,
   ): Promise<any> => {
-    validateSocketFields(socket, payload, ["userId", "lat", "long"]);
+    validateSocketFields(socket, payload, ["userId", "orderId", "lat", "long"]);
 
-    const { userId, lat, long } = payload;
+    const { userId, orderId, lat, long } = payload;
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
@@ -78,8 +78,8 @@ const updateLocation = socketCatchAsync(
       { returnDocument: "after", runValidators: true },
     );
 
-    // Broadcast to everyone (consider throttling in production)
-    io.emit(
+    // Broadcast only to clients in the specific order room
+    io.to(`order_${orderId}`).emit(
       EnumSocketEvent.UPDATE_LOCATION,
       emitResult({
         statusCode: status.OK,

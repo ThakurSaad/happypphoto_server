@@ -22,6 +22,18 @@ const socketHandlers = socketCatchAsync(async (socket: Socket, io: Server) => {
     isOnline: true,
   });
 
+  socket.on(EnumSocketEvent.SUBSCRIBE_DRIVER_LOCATION, (payload: any) => {
+    if (payload?.orderId) {
+      socket.join(`order_${payload.orderId}`);
+    }
+  });
+
+  socket.on(EnumSocketEvent.UNSUBSCRIBE_DRIVER_LOCATION, (payload: any) => {
+    if (payload?.orderId) {
+      socket.leave(`order_${payload.orderId}`);
+    }
+  });
+
   socket.on(EnumSocketEvent.UPDATE_LOCATION, async (payload) => {
     await SocketController.updateLocation(socket, io, { ...payload, userId });
   });
