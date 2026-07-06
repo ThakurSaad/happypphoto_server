@@ -48,6 +48,31 @@ router
     "/dashboard-stats",
     auth(config.auth_level.property_host),
     PropertyController.getDashboardStats,
+  )
+  .patch(
+    "/approve-request",
+    auth(config.auth_level.property_host),
+    PropertyController.approveRequest,
+  )
+  .patch(
+    "/reject-request",
+    auth(config.auth_level.property_host),
+    PropertyController.rejectRequest,
+  )
+  .get(
+    "/pending-requests",
+    auth(config.auth_level.property_host),
+    PropertyController.getPendingRequests,
+  )
+  .get(
+    "/scheduled-requests",
+    auth(config.auth_level.property_host),
+    PropertyController.getScheduledRequests,
+  )
+  .get(
+    "/delivered-requests",
+    auth(config.auth_level.property_host),
+    PropertyController.getDeliveredRequests,
   );
 
 export = router;

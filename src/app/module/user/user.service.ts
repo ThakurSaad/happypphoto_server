@@ -362,6 +362,102 @@ const updateMerchantDocument = async (req: Request) => {
   return userFromDB;
 };
 
+const updateStoreSettings = async (
+  userData: any,
+  payload: Record<string, any>,
+) => {
+  if (userData.role !== "MERCHANT") {
+    throw new ApiError(
+      status.FORBIDDEN,
+      "Only merchants can update store settings",
+    );
+  }
+
+  const updateData: Record<string, any> = {};
+
+  if (payload.businessHours !== undefined)
+    updateData.businessHours = payload.businessHours;
+  if (payload.storeDeliveryRadius !== undefined)
+    updateData.storeDeliveryRadius = Number(payload.storeDeliveryRadius);
+  if (payload.storeMinimumOrder !== undefined)
+    updateData.storeMinimumOrder = Number(payload.storeMinimumOrder);
+  if (payload.storePhoneNumber !== undefined)
+    updateData.storePhoneNumber = payload.storePhoneNumber;
+  if (payload.storeSupportEmail !== undefined)
+    updateData.storeSupportEmail = payload.storeSupportEmail;
+  if (typeof payload.storeIsOpen === "boolean")
+    updateData.storeIsOpen = payload.storeIsOpen;
+
+  if (Object.keys(updateData).length === 0) {
+    throw new ApiError(status.BAD_REQUEST, "No valid fields to update");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userData.userId,
+    updateData,
+    { new: true, runValidators: true },
+  );
+
+  if (!updatedUser) {
+    throw new ApiError(status.NOT_FOUND, "User not found");
+  }
+
+  return updatedUser;
+};
+
+const submitDriverApplication = async (
+  userData: any,
+  payload: Record<string, any>,
+) => {
+  if (userData.role !== "DRIVER") {
+    throw new ApiError(
+      status.FORBIDDEN,
+      "Only drivers can submit applications",
+    );
+  }
+
+  const user = await User.findById(userData.userId);
+  if (!user) throw new ApiError(status.NOT_FOUND, "User not found");
+
+  // Validate required fields
+  if (!payload.vehicleType) {
+    throw new ApiError(status.BAD_REQUEST, "Vehicle type is required");
+  }
+
+  // Check required documents are uploaded
+  if (!user.drivingLicense_image) {
+    throw new ApiError(status.BAD_REQUEST, "Driving license image is required");
+  }
+  if (!user.idCard_image) {
+    throw new ApiError(status.BAD_REQUEST, "ID card image is required");
+  }
+  if (!user.vehicleRegistration_image) {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      "Vehicle registration image is required",
+    );
+  }
+
+  user.vehicleType = payload.vehicleType;
+  if (payload.licenseNumber) user.licenseNumber = payload.licenseNumber;
+  if (payload.plateNumber) user.plateNumber = payload.plateNumber;
+  user.applicationStatus = "pending";
+  await user.save();
+
+  // Notify admin
+  const postNotification = require("../../../util/postNotification").default;
+  await postNotification(
+    "New Driver Application",
+    `Driver ${user.name} has submitted an application for review`,
+    // This would ideally go to admin, but we'll use a generic admin notification
+    "admin",
+  );
+
+  return {
+    message: "Application submitted successfully. Pending admin review.",
+  };
+};
+
 const UserService = {
   getProfile,
   deleteMyAccount,
@@ -371,6 +467,8 @@ const UserService = {
   updateMerchantStoreLocation,
   updateMerchantStoreProfile,
   updateMerchantDocument,
+  updateStoreSettings,
+  submitDriverApplication,
 };
 
 export { UserService };

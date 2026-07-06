@@ -110,6 +110,82 @@ const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const approveRequest = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await PropertyService.approveRequest(req.user, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Delivery request approved",
+    data: result,
+  });
+});
+
+const rejectRequest = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await PropertyService.rejectRequest(req.user, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Delivery request rejected",
+    data: result,
+  });
+});
+
+const getPendingRequests = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await PropertyService.getPendingRequests(
+    req.user,
+    req.query as QueryParams,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Pending requests retrieved",
+    data: result.requests,
+    meta: result.meta,
+  });
+});
+
+const getScheduledRequests = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await PropertyService.getScheduledRequests(
+    req.user,
+    req.query as QueryParams,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Scheduled requests retrieved",
+    data: result.requests,
+    meta: result.meta,
+  });
+});
+
+const getDeliveredRequests = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+  const result = await PropertyService.getDeliveredRequests(
+    req.user,
+    req.query as QueryParams,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Delivered requests retrieved",
+    data: result.requests,
+  });
+});
+
 const PropertyController = {
   addProperty,
   getProperties,
@@ -119,6 +195,11 @@ const PropertyController = {
   resolveCode,
   updateDeliveryRules,
   getDashboardStats,
+  approveRequest,
+  rejectRequest,
+  getPendingRequests,
+  getScheduledRequests,
+  getDeliveredRequests,
 };
 
 export { PropertyController };

@@ -1,10 +1,11 @@
 import Notification from "../app/module/notification/Notification";
 import AdminNotification from "../app/module/notification/AdminNotification";
+import { Types } from "mongoose";
 
 const postNotification = async (
   title: string,
   message: string,
-  toId: string | null = null,
+  toId: string | Types.ObjectId | null = null,
 ): Promise<void> => {
   if (!title || !message) {
     throw new Error("Missing required fields: title, or message");

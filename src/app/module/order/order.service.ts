@@ -8,6 +8,12 @@ import Property from "../property/Property";
 import { Product } from "../product/Product";
 import QueryBuilder, { QueryParams } from "../../../builder/queryBuilder";
 import postNotification from "../../../util/postNotification";
+import { validateTransition } from "../../../util/orderStateMachine";
+import { PaymentService } from "../payment/payment.service";
+import Payment from "../payment/Payment";
+import { StripeService } from "../payment/stripe.service";
+import User from "../user/User";
+import { Request } from "express";
 
 const DELIVERY_FEE = 5;
 const SERVICE_FEE = 2;
@@ -375,6 +381,414 @@ const trackOrder = async (userData: any, query: Record<string, any>) => {
   };
 };
 
+const acceptOrder = async (userData: any, payload: Record<string, any>) => {
+  validateFields(payload, ["orderId"]);
+
+  const order = await Order.findById(payload.orderId);
+  if (!order) {
+    throw new ApiError(status.NOT_FOUND, "Order not found");
+  }
+
+  if (order.merchantId.toString() !== userData.userId) {
+    throw new ApiError(
+      status.FORBIDDEN,
+      "This order does not belong to your store",
+    );
+  }
+
+  // Can accept from "pending" (direct) or "approved" (property-code after PM approval)
+  validateTransition(order.status, "accepted_by_merchant");
+
+  order.status = "accepted_by_merchant";
+  order.acceptedByMerchantAt = new Date();
+  await order.save();
+
+  // Notify customer
+  await postNotification(
+    "Order Accepted",
+    `Your order ${order.orderId} has been accepted by the restaurant`,
+    order.userId,
+  );
+
+  return order;
+};
+
+const updateOrderStatus = async (
+  userData: any,
+  payload: Record<string, any>,
+) => {
+  validateFields(payload, ["orderId", "status"]);
+
+  const order = await Order.findById(payload.orderId);
+  if (!order) {
+    throw new ApiError(status.NOT_FOUND, "Order not found");
+  }
+
+  if (order.merchantId.toString() !== userData.userId) {
+    throw new ApiError(
+      status.FORBIDDEN,
+      "This order does not belong to your store",
+    );
+  }
+
+  // Merchant can only do: accepted_by_merchant → preparing, preparing → ready_for_pickup
+  const allowedMerchantTransitions: Record<string, string> = {
+    accepted_by_merchant: "preparing",
+    preparing: "ready_for_pickup",
+  };
+
+  const expectedStatus = allowedMerchantTransitions[order.status];
+  if (!expectedStatus || expectedStatus !== payload.status) {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      `Merchants can only transition from "${order.status}" to "${expectedStatus || "N/A"}"`,
+    );
+  }
+
+  validateTransition(order.status, payload.status);
+  order.status = payload.status;
+  await order.save();
+
+  // Notifications based on new status
+  if (payload.status === "preparing") {
+    await postNotification(
+      "Order Being Prepared",
+      `Your order ${order.orderId} is now being prepared`,
+      order.userId,
+    );
+  } else if (payload.status === "ready_for_pickup") {
+    await postNotification(
+      "Order Ready",
+      `Order ${order.orderId} is ready for pickup`,
+      order.userId,
+    );
+  }
+
+  return order;
+};
+
+const assignDriver = async (userData: any, payload: Record<string, any>) => {
+  validateFields(payload, ["orderId", "driverId"]);
+
+  const order = await Order.findById(payload.orderId);
+  if (!order) throw new ApiError(status.NOT_FOUND, "Order not found");
+
+  validateTransition(order.status, "driver_assigned");
+
+  const driver = await User.findById(payload.driverId).lean();
+  if (!driver) throw new ApiError(status.NOT_FOUND, "Driver not found");
+  if (!driver.isApproved) {
+    throw new ApiError(status.BAD_REQUEST, "Driver is not approved");
+  }
+  if (!driver.isOnline) {
+    throw new ApiError(status.BAD_REQUEST, "Driver is not online");
+  }
+
+  order.driverId = payload.driverId;
+  order.status = "driver_assigned";
+  order.acceptedByDriverAt = new Date();
+  await order.save();
+
+  await postNotification(
+    "Delivery Assigned",
+    `You have been assigned to deliver order ${order.orderId}. Payout: $${order.driverPayout}`,
+    payload.driverId,
+  );
+
+  await postNotification(
+    "Driver Assigned",
+    `A driver has been assigned to your order ${order.orderId}`,
+    order.userId,
+  );
+
+  return order;
+};
+
+const acceptDelivery = async (userData: any, payload: Record<string, any>) => {
+  validateFields(payload, ["orderId"]);
+
+  const order = await Order.findById(payload.orderId);
+  if (!order) throw new ApiError(status.NOT_FOUND, "Order not found");
+
+  if (order.status !== "ready_for_pickup") {
+    throw new ApiError(status.BAD_REQUEST, "Order is not ready for pickup");
+  }
+
+  if (order.driverId) {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      "Order already has a driver assigned",
+    );
+  }
+
+  // Verify driver is approved and online
+  const driver = await User.findById(userData.userId).lean();
+  if (!driver?.isApproved) {
+    throw new ApiError(status.BAD_REQUEST, "You are not an approved driver");
+  }
+
+  validateTransition(order.status, "driver_assigned");
+
+  order.driverId = userData.userId;
+  order.status = "driver_assigned";
+  order.acceptedByDriverAt = new Date();
+  await order.save();
+
+  await postNotification(
+    "Driver Assigned",
+    `A driver has been assigned to your order ${order.orderId}`,
+    order.userId,
+  );
+
+  return order;
+};
+
+const pickedUp = async (userData: any, payload: Record<string, any>) => {
+  validateFields(payload, ["orderId"]);
+
+  const order = await Order.findById(payload.orderId);
+  if (!order) throw new ApiError(status.NOT_FOUND, "Order not found");
+
+  if (order.driverId?.toString() !== userData.userId) {
+    throw new ApiError(status.FORBIDDEN, "This order is not assigned to you");
+  }
+
+  validateTransition(order.status, "picked_up");
+
+  order.status = "picked_up";
+  order.pickedUpAt = new Date();
+  await order.save();
+
+  await postNotification(
+    "Order Picked Up",
+    `Your order ${order.orderId} has been picked up by the driver`,
+    order.userId,
+  );
+
+  return order;
+};
+
+const outForDelivery = async (userData: any, payload: Record<string, any>) => {
+  validateFields(payload, ["orderId"]);
+
+  const order = await Order.findById(payload.orderId);
+  if (!order) throw new ApiError(status.NOT_FOUND, "Order not found");
+
+  if (order.driverId?.toString() !== userData.userId) {
+    throw new ApiError(status.FORBIDDEN, "This order is not assigned to you");
+  }
+
+  validateTransition(order.status, "out_for_delivery");
+
+  order.status = "out_for_delivery";
+  await order.save();
+
+  await postNotification(
+    "Out for Delivery",
+    `Your order ${order.orderId} is out for delivery`,
+    order.userId,
+  );
+
+  return order;
+};
+
+const deliver = async (req: Request) => {
+  const { user: userData, body: payload } = req as any;
+
+  if (!userData) throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+
+  validateFields(payload, ["orderId"]);
+
+  const order = await Order.findById(payload.orderId);
+  if (!order) throw new ApiError(status.NOT_FOUND, "Order not found");
+
+  if (order.driverId?.toString() !== userData.userId) {
+    throw new ApiError(status.FORBIDDEN, "This order is not assigned to you");
+  }
+
+  validateTransition(order.status, "delivered");
+
+  // Handle proof of delivery image
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+
+  if (files?.proof_of_delivery) {
+    order.proofOfDelivery = files.proof_of_delivery[0].path;
+  }
+
+  order.status = "delivered";
+  order.actualDeliveryTime = new Date();
+  await order.save();
+
+  // Trigger payout transfers
+  try {
+    await PaymentService.processOrderPayouts(order._id.toString());
+  } catch (error: any) {
+    const { logger } = require("../../../util/logger");
+    logger.error(
+      `Failed to process payouts for order ${order.orderId}: ${error.message}`,
+    );
+  }
+
+  // Increment driver's total deliveries
+  await User.findByIdAndUpdate(userData.userId, {
+    $inc: { totalDeliveries: 1 },
+  });
+
+  // Notify all parties
+  await postNotification(
+    "Order Delivered",
+    `Order ${order.orderId} has been delivered successfully`,
+    order.userId,
+  );
+  await postNotification(
+    "Order Delivered",
+    `Order ${order.orderId} has been delivered. Your earnings will be transferred.`,
+    order.merchantId,
+  );
+  if (order.propertyHostId) {
+    await postNotification(
+      "Delivery Completed",
+      `Order ${order.orderId} has been delivered to your property`,
+      order.propertyHostId,
+    );
+  }
+
+  return order;
+};
+
+const cancelOrder = async (userData: any, payload: Record<string, any>) => {
+  validateFields(payload, ["orderId"]);
+
+  const order = await Order.findById(payload.orderId);
+  if (!order) throw new ApiError(status.NOT_FOUND, "Order not found");
+
+  // Role-based cancellation rules
+  const role = userData.role;
+  const orderStatus = order.status;
+
+  const canCancel: Record<string, string[]> = {
+    USER: ["pending", "pending_host_approval", "accepted_by_merchant"],
+    MERCHANT: ["pending", "approved", "accepted_by_merchant", "preparing"],
+    PROPERTY_HOST: ["pending_host_approval"],
+    ADMIN: [
+      "pending",
+      "pending_host_approval",
+      "approved",
+      "accepted_by_merchant",
+      "preparing",
+      "ready_for_pickup",
+      "driver_assigned",
+      "picked_up",
+      "out_for_delivery",
+    ],
+  };
+
+  const allowedStatuses = canCancel[role];
+  if (!allowedStatuses) {
+    throw new ApiError(status.FORBIDDEN, "Your role cannot cancel orders");
+  }
+
+  if (!allowedStatuses.includes(orderStatus)) {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      `Cannot cancel order in "${orderStatus}" status with your role`,
+    );
+  }
+
+  // Ownership validation
+  if (role === "USER" && order.userId.toString() !== userData.userId) {
+    throw new ApiError(status.FORBIDDEN, "This is not your order");
+  }
+  if (role === "MERCHANT" && order.merchantId.toString() !== userData.userId) {
+    throw new ApiError(
+      status.FORBIDDEN,
+      "This order does not belong to your store",
+    );
+  }
+  if (
+    role === "PROPERTY_HOST" &&
+    order.propertyHostId?.toString() !== userData.userId
+  ) {
+    throw new ApiError(
+      status.FORBIDDEN,
+      "This order is not linked to your property",
+    );
+  }
+
+  order.status = "cancelled";
+  order.cancelledBy = role;
+  order.cancelReason = payload.reason || "Cancelled by " + role.toLowerCase();
+  await order.save();
+
+  // Handle payment refund/cancellation
+  const payment = await Payment.findOne({ orderId: order._id });
+  if (payment) {
+    if (payment.status === "succeeded") {
+      // Full refund
+      try {
+        const refund = await StripeService.createRefund(
+          payment.stripePaymentIntentId as string,
+        );
+        payment.refundId = refund.id;
+        payment.refundAmount = refund.amount / 100;
+        payment.status = "refunded";
+        await payment.save();
+      } catch (error: any) {
+        const { logger } = require("../../../util/logger");
+        logger.error(
+          `Refund failed for order ${order.orderId}: ${error.message}`,
+        );
+      }
+    } else if (payment.status === "unpaid") {
+      // Cancel held payment intent
+      try {
+        await StripeService.cancelPaymentIntent(
+          payment.stripePaymentIntentId as string,
+        );
+      } catch (error: any) {
+        const { logger } = require("../../../util/logger");
+        logger.error(
+          `Payment cancellation failed for order ${order.orderId}: ${error.message}`,
+        );
+      }
+    }
+  }
+
+  // Also cancel associated DeliveryRequest if exists
+  if (order.propertyId) {
+    await DeliveryRequest.updateMany(
+      { orderId: order._id, status: "pending" },
+      { status: "rejected", reviewedAt: new Date() },
+    );
+  }
+
+  // Restore product stock
+  for (const item of order.items) {
+    const ProductModel = require("../product/Product").Product;
+    await ProductModel.findByIdAndUpdate(item.productId, {
+      $inc: { quantity: item.quantity },
+    });
+  }
+
+  // Notify all parties
+  await postNotification(
+    "Order Cancelled",
+    `Order ${order.orderId} has been cancelled. Reason: ${order.cancelReason}`,
+    order.userId,
+  );
+  if (order.userId.toString() !== userData.userId) {
+    await postNotification(
+      "Order Cancelled",
+      `Order ${order.orderId} has been cancelled`,
+      order.merchantId,
+    );
+  }
+
+  return order;
+};
+
 // Continued in Step 30...
 const OrderService = {
   placeOrder,
@@ -383,6 +797,14 @@ const OrderService = {
   getActiveOrders,
   getPendingDeliveryRequests,
   trackOrder,
+  acceptOrder,
+  updateOrderStatus,
+  assignDriver,
+  acceptDelivery,
+  pickedUp,
+  outForDelivery,
+  deliver,
+  cancelOrder,
 };
 
 export { OrderService };

@@ -46,6 +46,16 @@ router
     auth(config.auth_level.merchant),
     uploadFile(),
     UserController.updateMerchantDocument,
+  )
+  .patch(
+    "/update-store-settings",
+    auth(config.auth_level.merchant),
+    UserController.updateStoreSettings,
+  )
+  .patch(
+    "/submit-driver-application",
+    auth(config.auth_level.driver),
+    UserController.submitDriverApplication,
   );
 
 export = router;
