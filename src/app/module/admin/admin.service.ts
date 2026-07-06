@@ -141,7 +141,7 @@ const approveDriver = async (userId: string) => {
   );
 };
 
-const rejectDriver = async (userId: string, reason?: string) => {
+const rejectDriver = async (userId: string) => {
   return await User.findByIdAndUpdate(
     userId,
     { isApproved: false, applicationStatus: "rejected" },
