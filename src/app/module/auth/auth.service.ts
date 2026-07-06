@@ -143,6 +143,11 @@ const activateAccount = async (payload: {
       status.NOT_FOUND,
       "Activation code not found. Get a new activation code",
     );
+  if (auth.activationCodeExpire && auth.activationCodeExpire < new Date())
+    throw new ApiError(
+      status.BAD_REQUEST,
+      "Activation code has expired. Get a new activation code",
+    );
   if (auth.activationCode !== activationCode)
     throw new ApiError(status.BAD_REQUEST, "Code didn't match!");
 
@@ -291,6 +296,11 @@ const forgetPassOtpVerify = async (payload: {
       status.NOT_FOUND,
       "No verification code. Get a new verification code",
     );
+  if (auth.verificationCodeExpire && auth.verificationCodeExpire < new Date())
+    throw new ApiError(
+      status.BAD_REQUEST,
+      "Verification code has expired. Get a new verification code",
+    );
   if (auth.verificationCode !== code)
     throw new ApiError(status.BAD_REQUEST, "Invalid verification code!");
 
@@ -411,7 +421,7 @@ const hashPass = async (newPassword: string) => {
 
 // Unset activationCode activationCodeExpire field for expired activation code
 // Unset isVerified, verificationCode, verificationCodeExpire field for expired verification code
-cron.schedule("* * * * *", async () => {
+cron.schedule("*/10 * * * *", async () => {
   try {
     await Promise.all([
       updateFieldsWithCron("activation"),
