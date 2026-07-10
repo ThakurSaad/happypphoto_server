@@ -31,13 +31,8 @@
             ],
             "url": {
               "raw": "{{url}}/auth/register",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "register"]
             },
             "body": {
               "mode": "raw",
@@ -67,13 +62,8 @@
             ],
             "url": {
               "raw": "{{url}}/auth/login",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "login"]
             },
             "body": {
               "mode": "raw",
@@ -121,13 +111,8 @@
             ],
             "url": {
               "raw": "{{url}}/auth/activate-account",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "activate-account"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "activate-account"]
             },
             "body": {
               "mode": "raw",
@@ -175,13 +160,8 @@
             ],
             "url": {
               "raw": "{{url}}/auth/activation-code-resend",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "activation-code-resend"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "activation-code-resend"]
             },
             "body": {
               "mode": "raw",
@@ -211,13 +191,8 @@
             ],
             "url": {
               "raw": "{{url}}/auth/forgot-password",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "forgot-password"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "forgot-password"]
             },
             "body": {
               "mode": "raw",
@@ -247,13 +222,8 @@
             ],
             "url": {
               "raw": "{{url}}/auth/forget-pass-otp-verify",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "forget-pass-otp-verify"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "forget-pass-otp-verify"]
             },
             "body": {
               "mode": "raw",
@@ -283,13 +253,8 @@
             ],
             "url": {
               "raw": "{{url}}/auth/reset-password",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "reset-password"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "reset-password"]
             },
             "body": {
               "mode": "raw",
@@ -319,13 +284,8 @@
             ],
             "url": {
               "raw": "{{url}}/auth/change-password",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "change-password"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "change-password"]
             },
             "body": {
               "mode": "raw",
@@ -362,13 +322,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/user/profile",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "profile"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "profile"]
             },
             "auth": {
               "type": "bearer",
@@ -390,13 +345,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/user/edit-profile",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "edit-profile"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "edit-profile"]
             },
             "body": {
               "mode": "formdata",
@@ -459,13 +409,8 @@
             ],
             "url": {
               "raw": "{{url}}/user/delete-account",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "delete-account"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "delete-account"]
             },
             "body": {
               "mode": "raw",
@@ -497,13 +442,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/user/update-driver-information",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "update-driver-information"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "update-driver-information"]
             },
             "body": {
               "mode": "formdata",
@@ -566,13 +506,8 @@
             ],
             "url": {
               "raw": "{{url}}/user/update-merchant-business-information",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "update-merchant-business-information"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "update-merchant-business-information"]
             },
             "body": {
               "mode": "raw",
@@ -609,13 +544,8 @@
             ],
             "url": {
               "raw": "{{url}}/user/update-merchant-store-location",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "update-merchant-store-location"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "update-merchant-store-location"]
             },
             "body": {
               "mode": "raw",
@@ -647,13 +577,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/user/update-merchant-store-profile",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "update-merchant-store-profile"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "update-merchant-store-profile"]
             },
             "body": {
               "mode": "formdata",
@@ -717,13 +642,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/user/update-merchant-documents",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "update-merchant-documents"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "update-merchant-documents"]
             },
             "body": {
               "mode": "formdata",
@@ -774,13 +694,8 @@
             ],
             "url": {
               "raw": "{{url}}/user/update-store-settings",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "update-store-settings"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "update-store-settings"]
             },
             "body": {
               "mode": "raw",
@@ -817,13 +732,8 @@
             ],
             "url": {
               "raw": "{{url}}/user/submit-driver-application",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "user",
-                "submit-driver-application"
-              ]
+              "host": ["{{url}}"],
+              "path": ["user", "submit-driver-application"]
             },
             "body": {
               "mode": "raw",
@@ -860,13 +770,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/admin/profile",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "profile"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "profile"]
             },
             "auth": {
               "type": "bearer",
@@ -888,13 +793,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/admin/edit-profile",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "edit-profile"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "edit-profile"]
             },
             "body": {
               "mode": "formdata",
@@ -951,13 +851,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/delete-account",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "delete-account"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "delete-account"]
             },
             "body": {
               "mode": "raw",
@@ -989,13 +884,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/admin/get-all-users?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "get-all-users"
-              ],
+              "host": ["{{url}}"],
+              "path": ["admin", "get-all-users"],
               "query": [
                 {
                   "key": "page",
@@ -1041,13 +931,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/block-user",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "block-user"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "block-user"]
             },
             "body": {
               "mode": "raw",
@@ -1084,13 +969,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/approve-driver",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "approve-driver"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "approve-driver"]
             },
             "body": {
               "mode": "raw",
@@ -1127,13 +1007,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/reject-driver",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "reject-driver"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "reject-driver"]
             },
             "body": {
               "mode": "raw",
@@ -1170,13 +1045,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/approve-merchant",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "approve-merchant"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "approve-merchant"]
             },
             "body": {
               "mode": "raw",
@@ -1213,13 +1083,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/approve-property-host",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "approve-property-host"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "approve-property-host"]
             },
             "body": {
               "mode": "raw",
@@ -1251,13 +1116,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/admin/get-all-orders?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "get-all-orders"
-              ],
+              "host": ["{{url}}"],
+              "path": ["admin", "get-all-orders"],
               "query": [
                 {
                   "key": "page",
@@ -1298,13 +1158,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/admin/get-all-delivery-requests?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "get-all-delivery-requests"
-              ],
+              "host": ["{{url}}"],
+              "path": ["admin", "get-all-delivery-requests"],
               "query": [
                 {
                   "key": "page",
@@ -1350,13 +1205,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/force-approve-request",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "force-approve-request"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "force-approve-request"]
             },
             "body": {
               "mode": "raw",
@@ -1388,13 +1238,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/admin/get-all-stores?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "get-all-stores"
-              ],
+              "host": ["{{url}}"],
+              "path": ["admin", "get-all-stores"],
               "query": [
                 {
                   "key": "page",
@@ -1435,13 +1280,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/admin/get-all-properties?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "get-all-properties"
-              ],
+              "host": ["{{url}}"],
+              "path": ["admin", "get-all-properties"],
               "query": [
                 {
                   "key": "page",
@@ -1487,13 +1327,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/flag-property",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "flag-property"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "flag-property"]
             },
             "body": {
               "mode": "raw",
@@ -1525,13 +1360,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/admin/get-all-payments?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "get-all-payments"
-              ],
+              "host": ["{{url}}"],
+              "path": ["admin", "get-all-payments"],
               "query": [
                 {
                   "key": "page",
@@ -1577,13 +1407,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/approve-payout",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "approve-payout"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "approve-payout"]
             },
             "body": {
               "mode": "raw",
@@ -1620,13 +1445,8 @@
             ],
             "url": {
               "raw": "{{url}}/admin/reject-payout",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "reject-payout"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "reject-payout"]
             },
             "body": {
               "mode": "raw",
@@ -1658,13 +1478,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/admin/dashboard",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "dashboard"
-              ]
+              "host": ["{{url}}"],
+              "path": ["admin", "dashboard"]
             },
             "auth": {
               "type": "bearer",
@@ -1691,13 +1506,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/product/post-product",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "product",
-                "post-product"
-              ]
+              "host": ["{{url}}"],
+              "path": ["product", "post-product"]
             },
             "body": {
               "mode": "formdata",
@@ -1761,13 +1571,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/product/get-product?productId={{productId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "product",
-                "get-product"
-              ],
+              "host": ["{{url}}"],
+              "path": ["product", "get-product"],
               "query": [
                 {
                   "key": "productId",
@@ -1797,13 +1602,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/product/get-all-products?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "product",
-                "get-all-products"
-              ],
+              "host": ["{{url}}"],
+              "path": ["product", "get-all-products"],
               "query": [
                 {
                   "key": "page",
@@ -1850,13 +1650,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/product/update-product",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "product",
-                "update-product"
-              ]
+              "host": ["{{url}}"],
+              "path": ["product", "update-product"]
             },
             "body": {
               "mode": "formdata",
@@ -1931,13 +1726,8 @@
             ],
             "url": {
               "raw": "{{url}}/product/delete-product",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "product",
-                "delete-product"
-              ]
+              "host": ["{{url}}"],
+              "path": ["product", "delete-product"]
             },
             "body": {
               "mode": "raw",
@@ -1974,13 +1764,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/property/add-property",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "add-property"
-              ]
+              "host": ["{{url}}"],
+              "path": ["property", "add-property"]
             },
             "body": {
               "mode": "formdata",
@@ -2068,13 +1853,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/property/get-properties?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "get-properties"
-              ],
+              "host": ["{{url}}"],
+              "path": ["property", "get-properties"],
               "query": [
                 {
                   "key": "page",
@@ -2115,13 +1895,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/property/get-property?propertyId={{propertyId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "get-property"
-              ],
+              "host": ["{{url}}"],
+              "path": ["property", "get-property"],
               "query": [
                 {
                   "key": "propertyId",
@@ -2151,13 +1926,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/property/update-property",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "update-property"
-              ]
+              "host": ["{{url}}"],
+              "path": ["property", "update-property"]
             },
             "body": {
               "mode": "formdata",
@@ -2220,13 +1990,8 @@
             ],
             "url": {
               "raw": "{{url}}/property/delete-property",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "delete-property"
-              ]
+              "host": ["{{url}}"],
+              "path": ["property", "delete-property"]
             },
             "body": {
               "mode": "raw",
@@ -2258,13 +2023,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/property/resolve-code?propertyCode={{propertyCode}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "resolve-code"
-              ],
+              "host": ["{{url}}"],
+              "path": ["property", "resolve-code"],
               "query": [
                 {
                   "key": "propertyCode",
@@ -2299,13 +2059,8 @@
             ],
             "url": {
               "raw": "{{url}}/property/update-delivery-rules",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "update-delivery-rules"
-              ]
+              "host": ["{{url}}"],
+              "path": ["property", "update-delivery-rules"]
             },
             "body": {
               "mode": "raw",
@@ -2337,13 +2092,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/property/dashboard-stats",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "dashboard-stats"
-              ]
+              "host": ["{{url}}"],
+              "path": ["property", "dashboard-stats"]
             },
             "auth": {
               "type": "bearer",
@@ -2370,13 +2120,8 @@
             ],
             "url": {
               "raw": "{{url}}/property/approve-request",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "approve-request"
-              ]
+              "host": ["{{url}}"],
+              "path": ["property", "approve-request"]
             },
             "body": {
               "mode": "raw",
@@ -2413,13 +2158,8 @@
             ],
             "url": {
               "raw": "{{url}}/property/reject-request",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "reject-request"
-              ]
+              "host": ["{{url}}"],
+              "path": ["property", "reject-request"]
             },
             "body": {
               "mode": "raw",
@@ -2451,13 +2191,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/property/pending-requests?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "pending-requests"
-              ],
+              "host": ["{{url}}"],
+              "path": ["property", "pending-requests"],
               "query": [
                 {
                   "key": "page",
@@ -2492,13 +2227,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/property/scheduled-requests?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "scheduled-requests"
-              ],
+              "host": ["{{url}}"],
+              "path": ["property", "scheduled-requests"],
               "query": [
                 {
                   "key": "page",
@@ -2533,13 +2263,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/property/delivered-requests?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "property",
-                "delivered-requests"
-              ],
+              "host": ["{{url}}"],
+              "path": ["property", "delivered-requests"],
               "query": [
                 {
                   "key": "page",
@@ -2579,13 +2304,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/cart/get-cart",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "cart",
-                "get-cart"
-              ]
+              "host": ["{{url}}"],
+              "path": ["cart", "get-cart"]
             },
             "auth": {
               "type": "bearer",
@@ -2612,13 +2332,8 @@
             ],
             "url": {
               "raw": "{{url}}/cart/add-item",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "cart",
-                "add-item"
-              ]
+              "host": ["{{url}}"],
+              "path": ["cart", "add-item"]
             },
             "body": {
               "mode": "raw",
@@ -2655,13 +2370,8 @@
             ],
             "url": {
               "raw": "{{url}}/cart/update-item",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "cart",
-                "update-item"
-              ]
+              "host": ["{{url}}"],
+              "path": ["cart", "update-item"]
             },
             "body": {
               "mode": "raw",
@@ -2698,13 +2408,8 @@
             ],
             "url": {
               "raw": "{{url}}/cart/remove-item",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "cart",
-                "remove-item"
-              ]
+              "host": ["{{url}}"],
+              "path": ["cart", "remove-item"]
             },
             "body": {
               "mode": "raw",
@@ -2736,13 +2441,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/cart/clear-cart",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "cart",
-                "clear-cart"
-              ]
+              "host": ["{{url}}"],
+              "path": ["cart", "clear-cart"]
             },
             "auth": {
               "type": "bearer",
@@ -2769,13 +2469,8 @@
             ],
             "url": {
               "raw": "{{url}}/cart/set-property-code",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "cart",
-                "set-property-code"
-              ]
+              "host": ["{{url}}"],
+              "path": ["cart", "set-property-code"]
             },
             "body": {
               "mode": "raw",
@@ -2817,13 +2512,8 @@
             ],
             "url": {
               "raw": "{{url}}/order/place-order",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "place-order"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "place-order"]
             },
             "body": {
               "mode": "raw",
@@ -2855,13 +2545,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/order/get-order?orderId={{orderId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "get-order"
-              ],
+              "host": ["{{url}}"],
+              "path": ["order", "get-order"],
               "query": [
                 {
                   "key": "orderId",
@@ -2891,13 +2576,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/order/get-my-orders?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "get-my-orders"
-              ],
+              "host": ["{{url}}"],
+              "path": ["order", "get-my-orders"],
               "query": [
                 {
                   "key": "page",
@@ -2938,13 +2618,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/order/track?orderId={{orderId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "track"
-              ],
+              "host": ["{{url}}"],
+              "path": ["order", "track"],
               "query": [
                 {
                   "key": "orderId",
@@ -2979,13 +2654,8 @@
             ],
             "url": {
               "raw": "{{url}}/order/accept-order",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "accept-order"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "accept-order"]
             },
             "body": {
               "mode": "raw",
@@ -3022,13 +2692,8 @@
             ],
             "url": {
               "raw": "{{url}}/order/update-status",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "update-status"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "update-status"]
             },
             "body": {
               "mode": "raw",
@@ -3060,13 +2725,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/order/active-orders?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "active-orders"
-              ],
+              "host": ["{{url}}"],
+              "path": ["order", "active-orders"],
               "query": [
                 {
                   "key": "page",
@@ -3101,13 +2761,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/order/pending-requests?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "pending-requests"
-              ],
+              "host": ["{{url}}"],
+              "path": ["order", "pending-requests"],
               "query": [
                 {
                   "key": "page",
@@ -3147,13 +2802,8 @@
             ],
             "url": {
               "raw": "{{url}}/order/assign-driver",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "assign-driver"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "assign-driver"]
             },
             "body": {
               "mode": "raw",
@@ -3190,13 +2840,8 @@
             ],
             "url": {
               "raw": "{{url}}/order/accept-delivery",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "accept-delivery"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "accept-delivery"]
             },
             "body": {
               "mode": "raw",
@@ -3228,13 +2873,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/order/decline-delivery",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "decline-delivery"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "decline-delivery"]
             },
             "auth": {
               "type": "bearer",
@@ -3261,13 +2901,8 @@
             ],
             "url": {
               "raw": "{{url}}/order/picked-up",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "picked-up"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "picked-up"]
             },
             "body": {
               "mode": "raw",
@@ -3304,13 +2939,8 @@
             ],
             "url": {
               "raw": "{{url}}/order/out-for-delivery",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "out-for-delivery"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "out-for-delivery"]
             },
             "body": {
               "mode": "raw",
@@ -3342,13 +2972,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/order/deliver",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "deliver"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "deliver"]
             },
             "body": {
               "mode": "formdata",
@@ -3393,13 +3018,8 @@
             ],
             "url": {
               "raw": "{{url}}/order/cancel-order",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "cancel-order"
-              ]
+              "host": ["{{url}}"],
+              "path": ["order", "cancel-order"]
             },
             "body": {
               "mode": "raw",
@@ -3441,13 +3061,8 @@
             ],
             "url": {
               "raw": "{{url}}/payment/create-intent",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "payment",
-                "create-intent"
-              ]
+              "host": ["{{url}}"],
+              "path": ["payment", "create-intent"]
             },
             "body": {
               "mode": "raw",
@@ -3479,13 +3094,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/payment/get-payment?paymentId={{paymentId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "payment",
-                "get-payment"
-              ],
+              "host": ["{{url}}"],
+              "path": ["payment", "get-payment"],
               "query": [
                 {
                   "key": "paymentId",
@@ -3526,13 +3136,8 @@
             ],
             "url": {
               "raw": "{{url}}/payment/refund",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "payment",
-                "refund"
-              ]
+              "host": ["{{url}}"],
+              "path": ["payment", "refund"]
             },
             "body": {
               "mode": "raw",
@@ -3564,13 +3169,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/payment/create-connect-account",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "payment",
-                "create-connect-account"
-              ]
+              "host": ["{{url}}"],
+              "path": ["payment", "create-connect-account"]
             },
             "auth": {
               "type": "bearer",
@@ -3592,13 +3192,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/payment/connect-status",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "payment",
-                "connect-status"
-              ]
+              "host": ["{{url}}"],
+              "path": ["payment", "connect-status"]
             },
             "auth": {
               "type": "bearer",
@@ -3625,13 +3220,8 @@
             ],
             "url": {
               "raw": "{{url}}/payment/request-withdrawal",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "payment",
-                "request-withdrawal"
-              ]
+              "host": ["{{url}}"],
+              "path": ["payment", "request-withdrawal"]
             },
             "body": {
               "mode": "raw",
@@ -3663,13 +3253,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/payment/my-payouts?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "payment",
-                "my-payouts"
-              ],
+              "host": ["{{url}}"],
+              "path": ["payment", "my-payouts"],
               "query": [
                 {
                   "key": "page",
@@ -3710,13 +3295,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/payment/my-earnings?period=week",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "payment",
-                "my-earnings"
-              ],
+              "host": ["{{url}}"],
+              "path": ["payment", "my-earnings"],
               "query": [
                 {
                   "key": "period",
@@ -3746,13 +3326,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/payment/my-transactions?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "payment",
-                "my-transactions"
-              ],
+              "host": ["{{url}}"],
+              "path": ["payment", "my-transactions"],
               "query": [
                 {
                   "key": "page",
@@ -3796,13 +3371,8 @@
             ],
             "url": {
               "raw": "{{url}}/stripe/webhook",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "stripe",
-                "webhook"
-              ]
+              "host": ["{{url}}"],
+              "path": ["stripe", "webhook"]
             },
             "body": {
               "mode": "raw",
@@ -3837,13 +3407,8 @@
             ],
             "url": {
               "raw": "{{url}}/manage/add-terms-conditions",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "add-terms-conditions"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "add-terms-conditions"]
             },
             "body": {
               "mode": "raw",
@@ -3875,13 +3440,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/get-terms-conditions",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "get-terms-conditions"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "get-terms-conditions"]
             },
             "auth": {
               "type": "noauth"
@@ -3896,13 +3456,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/delete-terms-conditions?id={{contentId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "delete-terms-conditions"
-              ],
+              "host": ["{{url}}"],
+              "path": ["manage", "delete-terms-conditions"],
               "query": [
                 {
                   "key": "id",
@@ -3937,13 +3492,8 @@
             ],
             "url": {
               "raw": "{{url}}/manage/add-privacy-policy",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "add-privacy-policy"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "add-privacy-policy"]
             },
             "body": {
               "mode": "raw",
@@ -3975,13 +3525,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/get-privacy-policy",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "get-privacy-policy"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "get-privacy-policy"]
             },
             "auth": {
               "type": "noauth"
@@ -3996,13 +3541,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/delete-privacy-policy?id={{contentId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "delete-privacy-policy"
-              ],
+              "host": ["{{url}}"],
+              "path": ["manage", "delete-privacy-policy"],
               "query": [
                 {
                   "key": "id",
@@ -4037,13 +3577,8 @@
             ],
             "url": {
               "raw": "{{url}}/manage/add-about-us",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "add-about-us"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "add-about-us"]
             },
             "body": {
               "mode": "raw",
@@ -4075,13 +3610,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/get-about-us",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "get-about-us"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "get-about-us"]
             },
             "auth": {
               "type": "noauth"
@@ -4096,13 +3626,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/delete-about-us?id={{contentId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "delete-about-us"
-              ],
+              "host": ["{{url}}"],
+              "path": ["manage", "delete-about-us"],
               "query": [
                 {
                   "key": "id",
@@ -4137,13 +3662,8 @@
             ],
             "url": {
               "raw": "{{url}}/manage/add-faq",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "add-faq"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "add-faq"]
             },
             "body": {
               "mode": "raw",
@@ -4175,13 +3695,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/get-faq",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "get-faq"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "get-faq"]
             },
             "auth": {
               "type": "noauth"
@@ -4196,13 +3711,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/delete-faq?id={{contentId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "delete-faq"
-              ],
+              "host": ["{{url}}"],
+              "path": ["manage", "delete-faq"],
               "query": [
                 {
                   "key": "id",
@@ -4237,13 +3747,8 @@
             ],
             "url": {
               "raw": "{{url}}/manage/add-contact-us",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "add-contact-us"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "add-contact-us"]
             },
             "body": {
               "mode": "raw",
@@ -4275,13 +3780,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/get-contact-us",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "get-contact-us"
-              ]
+              "host": ["{{url}}"],
+              "path": ["manage", "get-contact-us"]
             },
             "auth": {
               "type": "noauth"
@@ -4296,13 +3796,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/manage/delete-contact-us?id={{contentId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "manage",
-                "delete-contact-us"
-              ],
+              "host": ["{{url}}"],
+              "path": ["manage", "delete-contact-us"],
               "query": [
                 {
                   "key": "id",
@@ -4337,13 +3832,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/notification/get-notification?notificationId={{notificationId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "notification",
-                "get-notification"
-              ],
+              "host": ["{{url}}"],
+              "path": ["notification", "get-notification"],
               "query": [
                 {
                   "key": "notificationId",
@@ -4373,13 +3863,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/notification/get-all-notifications?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "notification",
-                "get-all-notifications"
-              ],
+              "host": ["{{url}}"],
+              "path": ["notification", "get-all-notifications"],
               "query": [
                 {
                   "key": "page",
@@ -4425,13 +3910,8 @@
             ],
             "url": {
               "raw": "{{url}}/notification/update-as-mark-unread",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "notification",
-                "update-as-mark-unread"
-              ]
+              "host": ["{{url}}"],
+              "path": ["notification", "update-as-mark-unread"]
             },
             "body": {
               "mode": "raw",
@@ -4468,13 +3948,8 @@
             ],
             "url": {
               "raw": "{{url}}/notification/delete-notification",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "notification",
-                "delete-notification"
-              ]
+              "host": ["{{url}}"],
+              "path": ["notification", "delete-notification"]
             },
             "body": {
               "mode": "raw",
@@ -4516,13 +3991,8 @@
             ],
             "url": {
               "raw": "{{url}}/chat/post-chat",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "chat",
-                "post-chat"
-              ]
+              "host": ["{{url}}"],
+              "path": ["chat", "post-chat"]
             },
             "body": {
               "mode": "raw",
@@ -4554,13 +4024,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/chat/get-chat-messages?chatId={{chatId}}&page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "chat",
-                "get-chat-messages"
-              ],
+              "host": ["{{url}}"],
+              "path": ["chat", "get-chat-messages"],
               "query": [
                 {
                   "key": "chatId",
@@ -4600,13 +4065,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/chat/get-all-chats",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "chat",
-                "get-all-chats"
-              ]
+              "host": ["{{url}}"],
+              "path": ["chat", "get-all-chats"]
             },
             "auth": {
               "type": "bearer",
@@ -4633,13 +4093,8 @@
             ],
             "url": {
               "raw": "{{url}}/chat/update-message-as-seen",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "chat",
-                "update-message-as-seen"
-              ]
+              "host": ["{{url}}"],
+              "path": ["chat", "update-message-as-seen"]
             },
             "body": {
               "mode": "raw",
@@ -4681,13 +4136,8 @@
             ],
             "url": {
               "raw": "{{url}}/feedback/post-feedback",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "feedback",
-                "post-feedback"
-              ]
+              "host": ["{{url}}"],
+              "path": ["feedback", "post-feedback"]
             },
             "body": {
               "mode": "raw",
@@ -4719,13 +4169,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/feedback/get-feedback?feedbackId={{feedbackId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "feedback",
-                "get-feedback"
-              ],
+              "host": ["{{url}}"],
+              "path": ["feedback", "get-feedback"],
               "query": [
                 {
                   "key": "feedbackId",
@@ -4755,13 +4200,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/feedback/get-all-feedbacks?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "feedback",
-                "get-all-feedbacks"
-              ],
+              "host": ["{{url}}"],
+              "path": ["feedback", "get-all-feedbacks"],
               "query": [
                 {
                   "key": "page",
@@ -4807,13 +4247,8 @@
             ],
             "url": {
               "raw": "{{url}}/feedback/update-feedback-with-reply",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "feedback",
-                "update-feedback-with-reply"
-              ]
+              "host": ["{{url}}"],
+              "path": ["feedback", "update-feedback-with-reply"]
             },
             "body": {
               "mode": "raw",
@@ -4850,13 +4285,8 @@
             ],
             "url": {
               "raw": "{{url}}/feedback/delete-feedback",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "feedback",
-                "delete-feedback"
-              ]
+              "host": ["{{url}}"],
+              "path": ["feedback", "delete-feedback"]
             },
             "body": {
               "mode": "raw",
@@ -4898,13 +4328,8 @@
             ],
             "url": {
               "raw": "{{url}}/review/post-review",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "review",
-                "post-review"
-              ]
+              "host": ["{{url}}"],
+              "path": ["review", "post-review"]
             },
             "body": {
               "mode": "raw",
@@ -4936,13 +4361,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/review/get-all-reviews?page=1&limit=10",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "review",
-                "get-all-reviews"
-              ],
+              "host": ["{{url}}"],
+              "path": ["review", "get-all-reviews"],
               "query": [
                 {
                   "key": "page",
@@ -4983,13 +4403,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/review/get-review?reviewId={{reviewId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "review",
-                "get-review"
-              ],
+              "host": ["{{url}}"],
+              "path": ["review", "get-review"],
               "query": [
                 {
                   "key": "reviewId",
@@ -5024,13 +4439,8 @@
             ],
             "url": {
               "raw": "{{url}}/review/update-review",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "review",
-                "update-review"
-              ]
+              "host": ["{{url}}"],
+              "path": ["review", "update-review"]
             },
             "body": {
               "mode": "raw",
@@ -5062,13 +4472,8 @@
             "header": [],
             "url": {
               "raw": "{{url}}/review/delete-review?reviewId={{reviewId}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "review",
-                "delete-review"
-              ],
+              "host": ["{{url}}"],
+              "path": ["review", "delete-review"],
               "query": [
                 {
                   "key": "reviewId",
@@ -5101,9 +4506,7 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [
-          ""
-        ]
+        "exec": [""]
       }
     },
     {
@@ -5112,9 +4515,7 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [
-          ""
-        ]
+        "exec": [""]
       }
     }
   ],
