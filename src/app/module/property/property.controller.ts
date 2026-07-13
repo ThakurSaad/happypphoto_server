@@ -176,7 +176,7 @@ const getDeliveredRequests = catchAsync(async (req: Request, res: Response) => {
   }
   const result = await PropertyService.getDeliveredRequests(
     req.user,
-    req.query as QueryParams,
+    // req.query as QueryParams,
   );
   sendResponse(res, {
     statusCode: 200,
