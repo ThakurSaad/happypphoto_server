@@ -12,6 +12,7 @@ import PropertyRoutes from "../module/property/property.routes";
 import CartRoutes from "../module/cart/cart.routes";
 import PaymentRoutes from "../module/payment/payment.routes";
 import OrderRoutes from "../module/order/order.routes";
+import { StoreRoutes } from "../module/store/store.routes";
 const router = express.Router();
 
 const moduleRoutes = [
@@ -66,6 +67,10 @@ const moduleRoutes = [
   {
     path: "/payment",
     route: PaymentRoutes,
+  },
+  {
+    path: "/store",
+    route: StoreRoutes,
   },
 ];
 
