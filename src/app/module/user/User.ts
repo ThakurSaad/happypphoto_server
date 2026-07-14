@@ -1,6 +1,10 @@
 import { Schema, model } from "mongoose";
 import type { IUser } from "./user.interface";
-import { EnumUserRole, EnumVehicleType, EnumApplicationStatus } from "../../../util/enum";
+import {
+  EnumUserRole,
+  EnumVehicleType,
+  EnumApplicationStatus,
+} from "../../../util/enum";
 
 const UserSchema = new Schema<IUser>(
   {
@@ -86,6 +90,7 @@ const UserSchema = new Schema<IUser>(
       },
       coordinates: {
         type: [Number],
+        default: [0, 0],
       },
     },
 
@@ -131,6 +136,7 @@ const UserSchema = new Schema<IUser>(
       },
       coordinates: {
         type: [Number],
+        default: [0, 0],
       },
     },
     storeAddress: {
