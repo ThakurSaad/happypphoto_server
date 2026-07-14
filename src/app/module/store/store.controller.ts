@@ -17,7 +17,7 @@ const getNearbyStores = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getStoreDetails = catchAsync(async (req: Request, res: Response) => {
-  const result = await StoreService.getStoreDetails(req.params.id as string);
+  const result = await StoreService.getStoreDetails(req.query.id as string);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -29,7 +29,7 @@ const getStoreDetails = catchAsync(async (req: Request, res: Response) => {
 
 const getStoreProducts = catchAsync(async (req: Request, res: Response) => {
   const { meta, result } = await StoreService.getStoreProducts(
-    req.params.id as string,
+    req.query.id as string,
     req.query,
   );
 
