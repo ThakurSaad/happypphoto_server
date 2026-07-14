@@ -10,13 +10,9 @@ router.get(
   auth(config.auth_level.all),
   StoreController.getNearbyStores,
 );
+router.get("/store-details", auth(config.auth_level.all), StoreController.getStoreDetails);
 router.get(
-  "/:id",
-  auth(config.auth_level.all),
-  StoreController.getStoreDetails,
-);
-router.get(
-  "/:id/products",
+  "/products",
   auth(config.auth_level.all),
   StoreController.getStoreProducts,
 );
