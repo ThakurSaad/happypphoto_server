@@ -5,8 +5,20 @@ import { Product } from "../product/Product";
 import ApiError from "../../../error/ApiError";
 import QueryBuilder from "../../../builder/queryBuilder";
 
+const EARTH_RADIUS_METERS = 6378137;
+
 const getNearbyStores = async (query: any) => {
-  const { longitude, latitude, maxDistance = 10000, ...restQuery } = query;
+  const {
+    longitude,
+    latitude,
+    maxDistance = 10000,
+    searchTerm,
+    sort,
+    limit,
+    page,
+    fields,
+    ...filterFields
+  } = query;
 
   if (!longitude || !latitude) {
     throw new ApiError(
@@ -15,18 +27,23 @@ const getNearbyStores = async (query: any) => {
     );
   }
 
+  const coordinates = [parseFloat(longitude), parseFloat(latitude)];
+  const distance = parseFloat(maxDistance);
+
   const locationQuery = {
     role: "merchant",
     storeLocationCoordinates: {
       $nearSphere: {
         $geometry: {
           type: "Point",
-          coordinates: [parseFloat(longitude), parseFloat(latitude)],
+          coordinates,
         },
-        $maxDistance: parseFloat(maxDistance),
+        $maxDistance: distance,
       },
     },
   };
+
+  const restQuery = { searchTerm, sort, limit, page, fields, ...filterFields };
 
   const storeQuery = new QueryBuilder(User.find(locationQuery), restQuery)
     .search(["storeName", "storeDescription"])
@@ -35,7 +52,34 @@ const getNearbyStores = async (query: any) => {
     .fields();
 
   const result = await storeQuery.modelQuery;
-  const meta = await storeQuery.countTotal();
+
+  // $nearSphere is not allowed inside countDocuments()'s aggregation, so the
+  // total is computed separately using $geoWithin/$centerSphere instead.
+  const countFilter: Record<string, unknown> = {
+    role: "merchant",
+    storeLocationCoordinates: {
+      $geoWithin: {
+        $centerSphere: [coordinates, distance / EARTH_RADIUS_METERS],
+      },
+    },
+    ...filterFields,
+  };
+
+  if (searchTerm) {
+    countFilter.$or = ["storeName", "storeDescription"].map((field) => ({
+      [field]: { $regex: searchTerm, $options: "i" },
+    }));
+  }
+
+  const total = await User.countDocuments(countFilter);
+  const pageNum = Number(page) || 1;
+  const limitNum = Number(limit) || 10;
+  const meta = {
+    page: pageNum,
+    limit: limitNum,
+    total,
+    totalPage: Math.ceil(total / limitNum),
+  };
 
   return { meta, result };
 };

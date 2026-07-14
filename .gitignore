@@ -1,5 +1,4 @@
 node_modules
-.env
 .vercel
 uploads/
 logs/
@@ -7,3 +6,7 @@ dist/
 entrypoint.sh
 yarn.lock
 package-lock.json
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+config.bat
